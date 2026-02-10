@@ -1,0 +1,65 @@
+name: futsim
+description: "FutSim - Simulador de Futebol"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.4.1 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # UI e ícones
+  cupertino_icons: ^1.0.6
+  flutter_svg: ^2.0.9
+  google_fonts: ^6.2.1
+
+  # Estado e gerenciamento
+  provider: ^6.1.2
+  shared_preferences: ^2.3.1
+
+  # Utilitários
+  intl: ^0.19.0
+  meta: ^1.12.0   # Compatível com o flutter_test do SDK
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    # Logos dos clubes
+    - assets/logos/
+
+    # Rostos de jogadores principais
+    - assets/rostos/caucasianos/
+    - assets/rostos/afrodescendentes/
+    - assets/rostos/arabes/
+    - assets/rostos/asiaticos/
+    - assets/rostos/latinoamericanos/
+
+    # Rostos de jogadores da base
+    - assets/rostos_base/caucasianos/
+    - assets/rostos_base/afrodescendentes/
+    - assets/rostos_base/arabes/
+    - assets/rostos_base/asiaticos/
+    - assets/rostos_base/latinoamericanos/
+
+    # Outros assets (opcionais, manter se existir)
+    - assets/icons/
+    - assets/imagens/
+    - assets/jogadores/
+    - assets/clubes/
+
+  # Fontes personalizadas (opcional)
+  # fonts:
+  #   - family: Poppins
+  #     fonts:
+  #       - asset: assets/fonts/Poppins-Regular.ttf
+  #       - asset: assets/fonts/Poppins-Bold.ttf
+  #         weight: 700
