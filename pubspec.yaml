@@ -1,0 +1,183 @@
+name: footory26
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.1 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.6
+  flutter_riverpod: ^2.6.1
+  shared_preferences: ^2.3.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+
+    # =========================
+    # MENU / BOOT
+    # =========================
+    - assets/images/menu/
+
+    # =========================
+    # CLUBES - AMÉRICA DO SUL
+    # =========================
+    - assets/clubs/world/south_america/brazil/league_a/
+    - assets/clubs/world/south_america/brazil/league_b/
+    - assets/clubs/world/south_america/brazil/league_c/
+    - assets/clubs/world/south_america/brazil/league_d/
+
+    - assets/clubs/world/south_america/argentina/league_a/
+    - assets/clubs/world/south_america/argentina/league_b/
+
+    - assets/clubs/world/south_america/uruguay/league_a/
+    - assets/clubs/world/south_america/uruguay/league_b/
+
+    - assets/clubs/world/south_america/chile/league_a/
+    - assets/clubs/world/south_america/chile/league_b/
+
+    - assets/clubs/world/south_america/colombia/league_a/
+    - assets/clubs/world/south_america/colombia/league_b/
+
+    - assets/clubs/world/south_america/paraguay/league_a/
+    - assets/clubs/world/south_america/paraguay/league_b/
+
+    - assets/clubs/world/south_america/ecuador/league_a/
+    - assets/clubs/world/south_america/ecuador/league_b/
+
+    - assets/clubs/world/south_america/venezuela/league_a/
+    - assets/clubs/world/south_america/venezuela/league_b/
+
+    - assets/clubs/world/south_america/bolivia/league_a/
+    - assets/clubs/world/south_america/bolivia/league_b/
+
+    - assets/clubs/world/south_america/peru/league_a/
+    - assets/clubs/world/south_america/peru/league_b/
+
+    # =========================
+    # CLUBES - EUROPA
+    # =========================
+    - assets/clubs/world/europe/germany/league_a/
+    - assets/clubs/world/europe/germany/league_b/
+
+    - assets/clubs/world/europe/france/league_a/
+    - assets/clubs/world/europe/france/league_b/
+
+    - assets/clubs/world/europe/england/league_a/
+    - assets/clubs/world/europe/england/league_b/
+
+    - assets/clubs/world/europe/italy/league_a/
+    - assets/clubs/world/europe/italy/league_b/
+
+    - assets/clubs/world/europe/spain/league_a/
+    - assets/clubs/world/europe/spain/league_b/
+
+    - assets/clubs/world/europe/netherlands/league_a/
+    - assets/clubs/world/europe/netherlands/league_b/
+
+    - assets/clubs/world/europe/portugal/league_a/
+    - assets/clubs/world/europe/portugal/league_b/
+
+    - assets/clubs/world/europe/turkey/league_a/
+    - assets/clubs/world/europe/turkey/league_b/
+
+    # =========================
+    # CLUBES - ÁFRICA
+    # =========================
+    - assets/clubs/world/africa/egypt/league_a/
+    - assets/clubs/world/africa/egypt/league_b/
+
+    # =========================
+    # CLUBES - ÁSIA
+    # =========================
+    - assets/clubs/world/asia/saudi_arabia/league_a/
+    - assets/clubs/world/asia/saudi_arabia/league_b/
+
+    - assets/clubs/world/asia/south_korea/league_a/
+    - assets/clubs/world/asia/south_korea/league_b/
+
+    - assets/clubs/world/asia/japan/league_a/
+    - assets/clubs/world/asia/japan/league_b/
+
+    # =========================
+    # CLUBES - OCEANIA
+    # =========================
+    - assets/clubs/world/oceania/new_zealand/league_a/
+    - assets/clubs/world/oceania/new_zealand/league_b/
+
+    # =========================
+    # CLUBES - AMÉRICA DO NORTE
+    # =========================
+    - assets/clubs/world/north_america/usa/league_a/
+    - assets/clubs/world/north_america/usa/league_b/
+
+    # =========================
+    # CLUBES - AMÉRICA CENTRAL
+    # =========================
+    - assets/clubs/world/central_america/mexico/league_a/
+    - assets/clubs/world/central_america/mexico/league_b/
+
+    # =========================
+    # LOGOS
+    # =========================
+    - assets/logos/atlas_club_world_cup/
+    - assets/logos/intercontinental_crown/
+
+    - assets/logos/continental/championship_euro/
+    - assets/logos/continental/simon_bolivar/
+
+    - assets/logos/national/argentina/
+    - assets/logos/national/brazil/
+
+    # =========================
+    # FACES GERAIS
+    # =========================
+    - assets/faces/staff/
+
+    # =========================
+    # JOGADORES
+    # =========================
+    - assets/faces/players/
+    - assets/faces/players/afro/
+    - assets/faces/players/european/
+    - assets/faces/players/latin/
+    - assets/faces/players/arab/
+    - assets/faces/players/asian/
+
+    # =========================
+    # COACHES
+    # =========================
+    - assets/faces/coaches/gegenpress/
+    - assets/faces/coaches/set_piece/
+    - assets/faces/coaches/support_play/
+    - assets/faces/coaches/tactical_periodization/
+    - assets/faces/coaches/tiki_taka/
+
+    # =========================
+    # TÁTICAS / FORMAÇÕES
+    # =========================
+    - assets/tactical/formations/
+    - assets/tactical/formations/343/
+    - assets/tactical/formations/352/
+    - assets/tactical/formations/433/
+    - assets/tactical/formations/442/
+    - assets/tactical/formations/4141/
+    - assets/tactical/formations/4231/
+    - assets/tactical/formations/4312/
+
+    # =========================
+    # FLAGS
+    # =========================
+    - assets/flags/
