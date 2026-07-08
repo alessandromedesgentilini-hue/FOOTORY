@@ -1,0 +1,9 @@
+{
+"divisoes": [
+{"id":"A","nome":"Série A","clubes":20,"rodadas":38,"promove":0,"rebaixa":4},
+{"id":"B","nome":"Série B","clubes":20,"rodadas":38,"promove":4,"rebaixa":4},
+{"id":"C","nome":"Série C","clubes":20,"rodadas":38,"promove":4,"rebaixa":4},
+{"id":"D","nome":"Série D","clubes":20,"rodadas":38,"promove":4,"rebaixa":0}
+],
+"calendario": {"tipo":"duplo_turno"}
+}

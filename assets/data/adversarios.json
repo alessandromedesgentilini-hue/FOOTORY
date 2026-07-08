@@ -1,0 +1,111 @@
+{
+  "clubes": [
+    {
+      "id": "rubro-norte",
+      "nome": "Rubro Norte",
+      "divisao": "D",
+      "setores": {
+        "ata": 5.5,
+        "mei": 5.0,
+        "def": 5.2,
+        "gk": 5.1
+      },
+      "tendencia": "esquerda",
+      "nomes_padrao": ["Pedro Souza", "Caio", "Edu Lima"]
+    },
+    {
+      "id": "azul-sul",
+      "nome": "Azul Sul",
+      "divisao": "D",
+      "setores": {
+        "ata": 5.2,
+        "mei": 5.3,
+        "def": 5.0,
+        "gk": 5.4
+      },
+      "tendencia": "direita",
+      "nomes_padrao": ["R. Nunes", "G. Rocha", "L. Prado"]
+    },
+
+    {
+      "id": "verde-leste",
+      "nome": "Verde Leste",
+      "divisao": "C",
+      "setores": {
+        "ata": 6.1,
+        "mei": 6.0,
+        "def": 6.0,
+        "gk": 5.9
+      },
+      "tendencia": "centro",
+      "nomes_padrao": ["João Pedro", "Henrique", "B. Santos"]
+    },
+    {
+      "id": "alfa-oeste",
+      "nome": "Alfa Oeste",
+      "divisao": "C",
+      "setores": {
+        "ata": 6.3,
+        "mei": 6.2,
+        "def": 6.1,
+        "gk": 6.0
+      },
+      "tendencia": "esquerda",
+      "nomes_padrao": ["Thiago", "Gustavo", "V. Moreira"]
+    },
+
+    {
+      "id": "aurora",
+      "nome": "Aurora",
+      "divisao": "B",
+      "setores": {
+        "ata": 7.0,
+        "mei": 6.8,
+        "def": 6.7,
+        "gk": 6.6
+      },
+      "tendencia": "direita",
+      "nomes_padrao": ["Matheus", "Leandro", "J. Vitor"]
+    },
+    {
+      "id": "atlante",
+      "nome": "Atlante",
+      "divisao": "B",
+      "setores": {
+        "ata": 7.2,
+        "mei": 7.0,
+        "def": 6.9,
+        "gk": 6.8
+      },
+      "tendencia": "centro",
+      "nomes_padrao": ["D. Costa", "A. Lima", "M. Cardoso"]
+    },
+
+    {
+      "id": "imperial",
+      "nome": "Imperial",
+      "divisao": "A",
+      "setores": {
+        "ata": 8.0,
+        "mei": 7.8,
+        "def": 7.6,
+        "gk": 7.5
+      },
+      "tendencia": "esquerda",
+      "nomes_padrao": ["R. Carvalho", "P. Almeida", "F. Cunha"]
+    },
+    {
+      "id": "monarcas",
+      "nome": "Monarcas",
+      "divisao": "A",
+      "setores": {
+        "ata": 8.2,
+        "mei": 8.0,
+        "def": 7.9,
+        "gk": 7.7
+      },
+      "tendencia": "direita",
+      "nomes_padrao": ["I. Ribeiro", "N. Araujo", "K. Braga"]
+    }
+  ]
+}
