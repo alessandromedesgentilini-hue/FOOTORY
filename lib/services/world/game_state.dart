@@ -11,6 +11,7 @@ import 'package:footory26/models/continental/simon_bolivar_season_result.dart';
 import 'package:footory26/models/continental/world_tournament_result.dart';
 import 'package:footory26/models/cup_fixture.dart';
 import 'package:footory26/models/fixture.dart';
+import 'package:footory26/models/football_director.dart';
 import 'package:footory26/models/league_table.dart';
 import 'package:footory26/models/match_live_event.dart';
 import 'package:footory26/models/player.dart';
@@ -101,6 +102,34 @@ class GameState extends ChangeNotifier {
   String userClubId = '';
   String userClubName = '';
   String currentSaveSlotId = 'save_slot_1';
+
+  FootballDirector? _footballDirector;
+
+  FootballDirector? get footballDirector => _footballDirector;
+
+  bool get hasFootballDirector {
+    return _footballDirector?.hasRequiredData == true;
+  }
+
+  void assignFootballDirector(FootballDirector director) {
+    if (!director.hasRequiredData) {
+      throw ArgumentError.value(
+        director,
+        'director',
+        'O Diretor de Futebol não possui todos os dados obrigatórios.',
+      );
+    }
+
+    _footballDirector = director;
+    notifyListeners();
+  }
+
+  void clearFootballDirector() {
+    if (_footballDirector == null) return;
+
+    _footballDirector = null;
+    notifyListeners();
+  }
 
   int roundIndex = 1;
   bool seasonEnded = false;
@@ -208,13 +237,21 @@ class GameState extends ChangeNotifier {
 
   CoachStaff get selectedCoachStaffOrFallback {
     if (_selectedCoachStaff != null) return _selectedCoachStaff!;
-    return CoachStaffCatalog.all.first;
+    return CoachStaffCatalog.all.first.copyWith(
+      level: _userCoachLevel.clamp(1, 10),
+    );
   }
 
   bool get hasSelectedCoachStaff => _selectedCoachStaff != null;
 
   void chooseCoachStaff(CoachStaff staff) {
-    _selectedCoachStaff = staff;
+    final normalizedLevel = staff.level.clamp(1, 10);
+
+    _userCoachLevel = normalizedLevel;
+    _selectedCoachStaff = staff.copyWith(
+      level: normalizedLevel,
+    );
+
     notifyListeners();
   }
 
@@ -239,6 +276,13 @@ class GameState extends ChangeNotifier {
     if (finance.caixa < cost) return false;
 
     _userCoachLevel = nextLevel;
+
+    final currentStaff = _selectedCoachStaff;
+    if (currentStaff != null) {
+      _selectedCoachStaff = currentStaff.copyWith(
+        level: nextLevel,
+      );
+    }
 
     _financeByClub[userClubId] = _financeClubService.refreshHealth(
       finance.copyWith(

@@ -10,10 +10,18 @@ import 'package:footory26/services/world/catalog/coach_staff_catalog.dart';
 
 class ChooseCoachStaffPage extends ConsumerStatefulWidget {
   final String slotId;
+  final String divisionId;
+  final int seed;
+  final String clubId;
+  final String clubName;
 
   const ChooseCoachStaffPage({
     super.key,
     required this.slotId,
+    required this.divisionId,
+    required this.seed,
+    required this.clubId,
+    required this.clubName,
   });
 
   @override
@@ -30,6 +38,7 @@ class _ChooseCoachStaffPageState extends ConsumerState<ChooseCoachStaffPage> {
   @override
   void initState() {
     super.initState();
+
     if (CoachStaffCatalog.all.isNotEmpty) {
       _selected = CoachStaffCatalog.all.first;
     }
@@ -37,6 +46,29 @@ class _ChooseCoachStaffPageState extends ConsumerState<ChooseCoachStaffPage> {
 
   Future<void> _chooseAndContinue(CoachStaff staff) async {
     if (_saving) return;
+
+    final normalizedSlotId = widget.slotId.trim();
+    final normalizedDivisionId = widget.divisionId.trim();
+    final normalizedClubId = widget.clubId.trim();
+    final normalizedClubName = widget.clubName.trim();
+
+    if (!SaveStorageService.slotIds.contains(normalizedSlotId)) {
+      _showMessage(
+        'O slot selecionado não é válido.',
+        isError: true,
+      );
+      return;
+    }
+
+    if (normalizedDivisionId.isEmpty ||
+        normalizedClubId.isEmpty ||
+        normalizedClubName.isEmpty) {
+      _showMessage(
+        'Os dados do clube selecionado estão incompletos.',
+        isError: true,
+      );
+      return;
+    }
 
     setState(() {
       _selected = staff;
@@ -46,20 +78,45 @@ class _ChooseCoachStaffPageState extends ConsumerState<ChooseCoachStaffPage> {
     try {
       final state = ref.read(gameStateProvider);
 
-      state.currentSaveSlotId = widget.slotId;
+      if (!state.hasFootballDirector) {
+        _showMessage(
+          'Crie o Diretor de Futebol antes de iniciar a carreira.',
+          isError: true,
+        );
+        return;
+      }
+
+      state.currentSaveSlotId = normalizedSlotId;
+
+      state.startSeasonFromSave(
+        division: normalizedDivisionId,
+        seed: widget.seed,
+        userClubId: normalizedClubId,
+        userClubName: normalizedClubName,
+      );
+
       state.chooseCoachStaff(staff);
 
       await _saveStorage.saveFromGameState(
-        slotId: widget.slotId,
+        slotId: normalizedSlotId,
         gs: state,
       );
 
       if (!mounted) return;
 
-      Navigator.of(context).pushReplacement(
+      Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (_) => const MainHubPage(),
         ),
+        (route) => false,
+      );
+    } catch (error, stackTrace) {
+      debugPrint('Erro ao iniciar carreira: $error');
+      debugPrint('$stackTrace');
+
+      _showMessage(
+        'Não foi possível iniciar a carreira.',
+        isError: true,
       );
     } finally {
       if (mounted) {
@@ -71,6 +128,8 @@ class _ChooseCoachStaffPageState extends ConsumerState<ChooseCoachStaffPage> {
   }
 
   Future<void> _openDetails(CoachStaff staff) async {
+    if (_saving) return;
+
     final choose = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
         fullscreenDialog: true,
@@ -86,11 +145,32 @@ class _ChooseCoachStaffPageState extends ConsumerState<ChooseCoachStaffPage> {
     }
   }
 
+  void _showMessage(
+    String message, {
+    bool isError = false,
+  }) {
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: isError ? AppColors.danger : null,
+        ),
+      );
+  }
+
   @override
   Widget build(BuildContext context) {
     final gs = ref.watch(gameStateProvider);
 
-    final clubName = gs.userClubName.isEmpty ? 'Seu Clube' : gs.userClubName;
+    final normalizedClubName = widget.clubName.trim();
+
+    final clubName =
+        normalizedClubName.isEmpty ? 'Seu Clube' : normalizedClubName;
+
     final level = gs.userCoachLevel.clamp(1, 10);
     final staffList = CoachStaffCatalog.all;
 
@@ -119,6 +199,8 @@ class _ChooseCoachStaffPageState extends ConsumerState<ChooseCoachStaffPage> {
                         selected: _selected,
                         saving: _saving,
                         onSelect: (staff) {
+                          if (_saving) return;
+
                           setState(() {
                             _selected = staff;
                           });
@@ -237,7 +319,10 @@ class _HeroPill extends StatelessWidget {
   Widget build(BuildContext context) {
     return Flexible(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 8,
+          vertical: 5,
+        ),
         decoration: BoxDecoration(
           color: AppColors.white.withOpacity(0.16),
           borderRadius: BorderRadius.circular(999),
@@ -341,7 +426,7 @@ class _CoachStyleCard extends StatelessWidget {
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(18),
       child: InkWell(
-        onTap: onSelect,
+        onTap: saving ? null : onSelect,
         borderRadius: BorderRadius.circular(18),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 160),
@@ -415,8 +500,11 @@ class _CoachStyleCard extends StatelessWidget {
                     child: SizedBox(
                       height: 38,
                       child: OutlinedButton.icon(
-                        onPressed: onDetails,
-                        icon: const Icon(Icons.info_outline_rounded, size: 17),
+                        onPressed: saving ? null : onDetails,
+                        icon: const Icon(
+                          Icons.info_outline_rounded,
+                          size: 17,
+                        ),
                         label: const Text('Detalhes'),
                       ),
                     ),
@@ -473,9 +561,13 @@ class _ConfirmButton extends StatelessWidget {
             ? const SizedBox(
                 width: 18,
                 height: 18,
-                child: CircularProgressIndicator(strokeWidth: 2),
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                ),
               )
-            : const Icon(Icons.check_circle_outline_rounded),
+            : const Icon(
+                Icons.check_circle_outline_rounded,
+              ),
         label: Text(
           label,
           maxLines: 1,
@@ -564,7 +656,9 @@ class _CoachStaffDetailsPage extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 7),
-                          _HeroPill(label: 'DNA Tático'),
+                          const _HeroPill(
+                            label: 'DNA Tático',
+                          ),
                         ],
                       ),
                     ),
@@ -583,14 +677,18 @@ class _CoachStaffDetailsPage extends StatelessWidget {
                         title: 'Treinador Principal',
                       ),
                       const SizedBox(height: 8),
-                      _CoachMainCard(member: staff.coach),
+                      _CoachMainCard(
+                        member: staff.coach,
+                      ),
                       const SizedBox(height: 12),
                       const _PanelTitle(
                         icon: Icons.article_rounded,
                         title: 'Filosofia',
                       ),
                       const SizedBox(height: 8),
-                      _TextBlock(text: staff.shortDescription),
+                      _TextBlock(
+                        text: staff.shortDescription,
+                      ),
                       const SizedBox(height: 12),
                       const _PanelTitle(
                         icon: Icons.groups_2_rounded,
@@ -600,11 +698,15 @@ class _CoachStaffDetailsPage extends StatelessWidget {
                       Row(
                         children: [
                           Expanded(
-                            child: _AssistantMiniCard(member: staff.assistant1),
+                            child: _AssistantMiniCard(
+                              member: staff.assistant1,
+                            ),
                           ),
                           const SizedBox(width: 8),
                           Expanded(
-                            child: _AssistantMiniCard(member: staff.assistant2),
+                            child: _AssistantMiniCard(
+                              member: staff.assistant2,
+                            ),
                           ),
                         ],
                       ),
@@ -617,7 +719,9 @@ class _CoachStaffDetailsPage extends StatelessWidget {
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton.icon(
-                  onPressed: () => Navigator.of(context).pop(true),
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  },
                   icon: Icon(
                     selected
                         ? Icons.check_circle_rounded
@@ -667,20 +771,24 @@ class _CoachMainCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.white,
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(
+                color: AppColors.border,
+              ),
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(18),
               child: Image.asset(
                 member.imageAsset,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const Center(
-                  child: Icon(
-                    Icons.person_rounded,
-                    color: AppColors.primary,
-                    size: 40,
-                  ),
-                ),
+                errorBuilder: (_, __, ___) {
+                  return const Center(
+                    child: Icon(
+                      Icons.person_rounded,
+                      color: AppColors.primary,
+                      size: 40,
+                    ),
+                  );
+                },
               ),
             ),
           ),
@@ -748,20 +856,24 @@ class _AssistantMiniCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.white,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(
+                color: AppColors.border,
+              ),
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: Image.asset(
                 member.imageAsset,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const Center(
-                  child: Icon(
-                    Icons.person_rounded,
-                    color: AppColors.primary,
-                    size: 32,
-                  ),
-                ),
+                errorBuilder: (_, __, ___) {
+                  return const Center(
+                    child: Icon(
+                      Icons.person_rounded,
+                      color: AppColors.primary,
+                      size: 32,
+                    ),
+                  );
+                },
               ),
             ),
           ),
@@ -886,24 +998,28 @@ class _FlagIcon extends StatelessWidget {
       width: size,
       height: size,
       fit: BoxFit.cover,
-      errorBuilder: (_, __, ___) => Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: AppColors.border),
-        ),
-        alignment: Alignment.center,
-        child: Text(
-          countryCode.toUpperCase(),
-          style: const TextStyle(
-            fontSize: 7,
-            fontWeight: FontWeight.w900,
-            color: AppColors.textSecondary,
+      errorBuilder: (_, __, ___) {
+        return Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(
+              color: AppColors.border,
+            ),
           ),
-        ),
-      ),
+          alignment: Alignment.center,
+          child: Text(
+            countryCode.toUpperCase(),
+            style: const TextStyle(
+              fontSize: 7,
+              fontWeight: FontWeight.w900,
+              color: AppColors.textSecondary,
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -979,6 +1095,7 @@ String _flagAssetFromCode(String code) {
   switch (normalized) {
     case 'eng':
       return 'assets/flags/eng.png';
+
     default:
       return 'assets/flags/$normalized.png';
   }
@@ -989,37 +1106,53 @@ String _countryLabel(String code) {
     case 'bra':
     case 'br':
       return 'Brasil';
+
     case 'arg':
       return 'Argentina';
+
     case 'uru':
       return 'Uruguai';
+
     case 'chi':
       return 'Chile';
+
     case 'col':
       return 'Colômbia';
+
     case 'par':
       return 'Paraguai';
+
     case 'per':
       return 'Peru';
+
     case 'bol':
       return 'Bolívia';
+
     case 'ven':
       return 'Venezuela';
+
     case 'eng':
       return 'Inglaterra';
+
     case 'esp':
       return 'Espanha';
+
     case 'ita':
       return 'Itália';
+
     case 'ger':
     case 'deu':
       return 'Alemanha';
+
     case 'fra':
       return 'França';
+
     case 'por':
       return 'Portugal';
+
     case 'ned':
       return 'Holanda';
+
     default:
       return code.toUpperCase();
   }

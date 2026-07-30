@@ -3,10 +3,15 @@ part of '../game_state.dart';
 extension GameStateSaveHandler on GameState {
   Map<String, dynamic> exportStateForSave() {
     final userSquad = _proSquads[userClubId] ?? const <Player>[];
-    final staff = selectedCoachStaffOrFallback;
+
+    final coachLevel = _userCoachLevel.clamp(1, 10);
+
+    final staff = selectedCoachStaffOrFallback.copyWith(
+      level: coachLevel,
+    );
 
     return <String, dynamic>{
-      'saveVersion': 6,
+      'saveVersion': 7,
       'slotId': currentSaveSlotId,
       'clubId': userClubId,
       'clubName': userClubName,
@@ -17,11 +22,12 @@ extension GameStateSaveHandler on GameState {
       'dateStr': dateStr,
       'currentDateIso': _currentDate.toIso8601String(),
       'seasonEnded': seasonEnded,
+      'footballDirector': _footballDirector?.toMap(),
       'coachStaffId': staff.id,
-      'userCoachLevel': staff.level,
+      'userCoachLevel': coachLevel,
       'coachStaff': <String, dynamic>{
         'id': staff.id,
-        'level': staff.level,
+        'level': coachLevel,
         'contractEndYear': staff.contractEndYear,
         'prestige': staff.prestige.name,
         'monthlySalary': staff.monthlySalary,
@@ -44,7 +50,10 @@ extension GameStateSaveHandler on GameState {
       },
       'finance': _financeToJson(userFinance),
       'financeByClub': _financeByClub.map(
-        (clubId, finance) => MapEntry(clubId, _financeToJson(finance)),
+        (clubId, finance) => MapEntry(
+          clubId,
+          _financeToJson(finance),
+        ),
       ),
       'structures': _structuresToJson(_userClubStructures),
       'clubLegacy': _clubLegacy.map(
@@ -96,43 +105,91 @@ extension GameStateSaveHandler on GameState {
 
   void restoreRuntimeStateFromSave(Map<String, dynamic> state) {
     final currentDateIso = state['currentDateIso'] as String?;
+
     if (currentDateIso != null && currentDateIso.trim().isNotEmpty) {
       final parsed = DateTime.tryParse(currentDateIso);
+
       if (parsed != null) {
         _currentDate = parsed;
         dateStr = _formatDate(_currentDate);
       }
     }
 
-    _seasonYear = _readInt(state['seasonYear'], fallback: _seasonYear);
-    roundIndex = _readInt(state['roundIndex'], fallback: roundIndex);
+    _seasonYear = _readInt(
+      state['seasonYear'],
+      fallback: _seasonYear,
+    );
+
+    roundIndex = _readInt(
+      state['roundIndex'],
+      fallback: roundIndex,
+    );
+
     seasonEnded = state['seasonEnded'] == true;
     lastUserMatch = state['lastUserMatch'] as String?;
 
-    userWinStreak = _readInt(state['userWinStreak'], fallback: userWinStreak);
-    userLoseStreak =
-        _readInt(state['userLoseStreak'], fallback: userLoseStreak);
-    userDrawStreak =
-        _readInt(state['userDrawStreak'], fallback: userDrawStreak);
+    userWinStreak = _readInt(
+      state['userWinStreak'],
+      fallback: userWinStreak,
+    );
 
+    userLoseStreak = _readInt(
+      state['userLoseStreak'],
+      fallback: userLoseStreak,
+    );
+
+    userDrawStreak = _readInt(
+      state['userDrawStreak'],
+      fallback: userDrawStreak,
+    );
+
+    _restoreFootballDirectorFromSave(state);
     _restoreCoachStaffFromSave(state);
     _restoreLeagueSeasonsFromSave(state);
     _restoreBrazilCupFromSave(state);
 
     final structuresMap =
         (state['structures'] as Map?)?.cast<String, dynamic>();
+
     if (structuresMap != null) {
       _userClubStructures = _clampStructuresByComplexo(
         ClubStructures(
-          complexo: _readInt(structuresMap['complexo'], fallback: 1),
-          ct: _readInt(structuresMap['ct'], fallback: 1),
-          base: _readInt(structuresMap['base'], fallback: 1),
-          scout: _readInt(structuresMap['scout'], fallback: 1),
-          financeiro: _readInt(structuresMap['financeiro'], fallback: 1),
-          marketing: _readInt(structuresMap['marketing'], fallback: 1),
-          comunicacao: _readInt(structuresMap['comunicacao'], fallback: 1),
-          medico: _readInt(structuresMap['medico'], fallback: 1),
-          estadio: _readInt(structuresMap['estadio'], fallback: 1),
+          complexo: _readInt(
+            structuresMap['complexo'],
+            fallback: 1,
+          ),
+          ct: _readInt(
+            structuresMap['ct'],
+            fallback: 1,
+          ),
+          base: _readInt(
+            structuresMap['base'],
+            fallback: 1,
+          ),
+          scout: _readInt(
+            structuresMap['scout'],
+            fallback: 1,
+          ),
+          financeiro: _readInt(
+            structuresMap['financeiro'],
+            fallback: 1,
+          ),
+          marketing: _readInt(
+            structuresMap['marketing'],
+            fallback: 1,
+          ),
+          comunicacao: _readInt(
+            structuresMap['comunicacao'],
+            fallback: 1,
+          ),
+          medico: _readInt(
+            structuresMap['medico'],
+            fallback: 1,
+          ),
+          estadio: _readInt(
+            structuresMap['estadio'],
+            fallback: 1,
+          ),
         ),
       );
     }
@@ -151,12 +208,14 @@ extension GameStateSaveHandler on GameState {
       }
     } else {
       final financeMap = (state['finance'] as Map?)?.cast<String, dynamic>();
+
       if (financeMap != null) {
         _financeByClub[userClubId] = _financeFromJson(financeMap);
       }
     }
 
     final legacyMap = (state['clubLegacy'] as Map?)?.cast<String, dynamic>();
+
     if (legacyMap != null) {
       _clubLegacy.clear();
 
@@ -168,70 +227,107 @@ extension GameStateSaveHandler on GameState {
 
         _clubLegacy[entry.key] = ClubLegacyEntry(
           clubId: clubId,
-          totalPoints: _readInt(value['totalPoints'], fallback: 0),
-          seasons: _readInt(value['seasons'], fallback: 0),
+          totalPoints: _readInt(
+            value['totalPoints'],
+            fallback: 0,
+          ),
+          seasons: _readInt(
+            value['seasons'],
+            fallback: 0,
+          ),
         );
       }
     }
 
     final rawUserSquad = state['userSquad'] as List?;
+
     if (rawUserSquad != null) {
       _proSquads[userClubId] = rawUserSquad
           .whereType<Map>()
-          .map((e) => Player.fromJson(e.cast<String, dynamic>()))
+          .map(
+            (e) => Player.fromJson(
+              e.cast<String, dynamic>(),
+            ),
+          )
           .toList();
     }
 
     final marketMap = (state['market'] as Map?)?.cast<String, dynamic>();
+
     if (marketMap != null) {
       _marketService.clearMarket();
 
       _marketService.addManyTransferPlayers(
-        _playersFromRawList(marketMap['transferPlayers']),
+        _playersFromRawList(
+          marketMap['transferPlayers'],
+        ),
       );
 
       _marketService.addManyLoanPlayers(
-        _playersFromRawList(marketMap['loanPlayers']),
+        _playersFromRawList(
+          marketMap['loanPlayers'],
+        ),
       );
 
       _marketService.addManyFreeAgents(
-        _playersFromRawList(marketMap['freeAgents']),
+        _playersFromRawList(
+          marketMap['freeAgents'],
+        ),
       );
     }
 
     final scoutMap = (state['scout'] as Map?)?.cast<String, dynamic>();
+
     if (scoutMap != null) {
       _scoutTransfers
         ..clear()
-        ..addAll(_targetsFromRawList(scoutMap['transfers']));
+        ..addAll(
+          _targetsFromRawList(
+            scoutMap['transfers'],
+          ),
+        );
 
       _scoutLoans
         ..clear()
-        ..addAll(_targetsFromRawList(scoutMap['loans']));
+        ..addAll(
+          _targetsFromRawList(
+            scoutMap['loans'],
+          ),
+        );
 
       _scoutFrees
         ..clear()
-        ..addAll(_targetsFromRawList(scoutMap['frees']));
+        ..addAll(
+          _targetsFromRawList(
+            scoutMap['frees'],
+          ),
+        );
     }
 
     final rawObserved = state['observedPlayers'] as List?;
+
     if (rawObserved != null) {
       _observedPlayers
         ..clear()
         ..addAll(
           rawObserved.whereType<Map>().map(
-                (e) => ObservedPlayer.fromJson(e.cast<String, dynamic>()),
+                (e) => ObservedPlayer.fromJson(
+                  e.cast<String, dynamic>(),
+                ),
               ),
         );
     }
 
     final rawFutureArrivals = state['futureArrivals'] as List?;
+
     if (rawFutureArrivals != null) {
       _futureArrivals
         ..clear()
         ..addAll(
           rawFutureArrivals.whereType<Map>().map(
-                (e) => FutureArrival.fromJson(e.cast<String, dynamic>()),
+                (e) => FutureArrival.fromJson(
+                  e.cast<String, dynamic>(),
+                ),
               ),
         );
     }
@@ -247,6 +343,7 @@ extension GameStateSaveHandler on GameState {
 
     if (simonBolivarMap != null) {
       final rawGroupFixtures = simonBolivarMap['groupFixtures'] as List?;
+
       if (rawGroupFixtures != null) {
         _simonBolivarGroupFixtures
           ..clear()
@@ -260,6 +357,7 @@ extension GameStateSaveHandler on GameState {
       }
 
       final rawKnockoutFixtures = simonBolivarMap['knockoutFixtures'] as List?;
+
       if (rawKnockoutFixtures != null) {
         _simonBolivarKnockoutFixtures
           ..clear()
@@ -274,10 +372,13 @@ extension GameStateSaveHandler on GameState {
     }
 
     final rawNews = state['newsFeed'] as List?;
+
     _newsFeed.clear();
 
     if (rawNews != null) {
-      _newsFeed.addAll(rawNews.map((e) => e.toString()));
+      _newsFeed.addAll(
+        rawNews.map((e) => e.toString()),
+      );
     }
 
     _newsCategoryByText.clear();
@@ -288,6 +389,7 @@ extension GameStateSaveHandler on GameState {
     if (rawCategories != null) {
       for (final entry in rawCategories.entries) {
         final text = entry.key.trim();
+
         if (text.isEmpty) continue;
 
         _newsCategoryByText[text] = GameMessage.categoryFromString(
@@ -299,6 +401,7 @@ extension GameStateSaveHandler on GameState {
 
     for (final text in _newsFeed) {
       final key = text.trim();
+
       if (key.isEmpty) continue;
 
       _newsCategoryByText.putIfAbsent(
@@ -308,43 +411,97 @@ extension GameStateSaveHandler on GameState {
     }
 
     final readMap = (state['readState'] as Map?)?.cast<String, dynamic>();
-    if (readMap != null) {
-      _readNewsCount = _readInt(readMap['readNewsCount'], fallback: 0);
-      _readDepartmentMessagesCount =
-          _readInt(readMap['readDepartmentMessagesCount'], fallback: 0);
 
-      _readMatchNewsCount =
-          _readInt(readMap['readMatchNewsCount'], fallback: 0);
-      _readMarketNewsCount =
-          _readInt(readMap['readMarketNewsCount'], fallback: 0);
-      _readWorldNewsCount =
-          _readInt(readMap['readWorldNewsCount'], fallback: 0);
-      _readFinanceNewsCount =
-          _readInt(readMap['readFinanceNewsCount'], fallback: 0);
-      _readTrainingNewsCount =
-          _readInt(readMap['readTrainingNewsCount'], fallback: 0);
-      _readSeasonNewsCount =
-          _readInt(readMap['readSeasonNewsCount'], fallback: 0);
+    if (readMap != null) {
+      _readNewsCount = _readInt(
+        readMap['readNewsCount'],
+        fallback: 0,
+      );
+
+      _readDepartmentMessagesCount = _readInt(
+        readMap['readDepartmentMessagesCount'],
+        fallback: 0,
+      );
+
+      _readMatchNewsCount = _readInt(
+        readMap['readMatchNewsCount'],
+        fallback: 0,
+      );
+
+      _readMarketNewsCount = _readInt(
+        readMap['readMarketNewsCount'],
+        fallback: 0,
+      );
+
+      _readWorldNewsCount = _readInt(
+        readMap['readWorldNewsCount'],
+        fallback: 0,
+      );
+
+      _readFinanceNewsCount = _readInt(
+        readMap['readFinanceNewsCount'],
+        fallback: 0,
+      );
+
+      _readTrainingNewsCount = _readInt(
+        readMap['readTrainingNewsCount'],
+        fallback: 0,
+      );
+
+      _readSeasonNewsCount = _readInt(
+        readMap['readSeasonNewsCount'],
+        fallback: 0,
+      );
     }
 
     _recalculateMonthlyWageForClub(userClubId);
     _syncUserDivisionViews();
   }
 
-  void _restoreCoachStaffFromSave(Map<String, dynamic> state) {
+  void _restoreFootballDirectorFromSave(
+    Map<String, dynamic> state,
+  ) {
+    final rawDirector = state['footballDirector'];
+
+    if (rawDirector is! Map) {
+      _footballDirector = null;
+      return;
+    }
+
+    try {
+      final director = FootballDirector.fromMap(
+        rawDirector.cast<String, dynamic>(),
+      );
+
+      _footballDirector = director.hasRequiredData ? director : null;
+    } catch (error, stackTrace) {
+      debugPrint(
+        'Erro ao restaurar Diretor de Futebol: $error',
+      );
+      debugPrint('$stackTrace');
+
+      _footballDirector = null;
+    }
+  }
+
+  void _restoreCoachStaffFromSave(
+    Map<String, dynamic> state,
+  ) {
     final staffMap = (state['coachStaff'] as Map?)?.cast<String, dynamic>();
 
-    final id = (staffMap?['id'] as String?) ??
-        (state['coachStaffId'] as String?) ??
-        selectedCoachStaffOrFallback.id;
+    final rawId = staffMap?['id'] ?? state['coachStaffId'];
+
+    final id = rawId?.toString().trim();
+
+    final fallbackStaff = selectedCoachStaffOrFallback;
 
     final base = CoachStaffCatalog.all.firstWhere(
-      (e) => e.id == id,
-      orElse: () => selectedCoachStaffOrFallback,
+      (staff) => staff.id == id,
+      orElse: () => fallbackStaff,
     );
 
     final level = _readInt(
-      staffMap?['level'] ?? state['userCoachLevel'],
+      state['userCoachLevel'] ?? staffMap?['level'],
       fallback: base.level,
     ).clamp(1, 10);
 
@@ -358,13 +515,13 @@ extension GameStateSaveHandler on GameState {
       fallback: base.prestige,
     );
 
+    _userCoachLevel = level;
+
     _selectedCoachStaff = base.copyWith(
       level: level,
       contractEndYear: contractEndYear,
       prestige: prestige,
     );
-
-    _userCoachLevel = level;
   }
 
   CoachPrestige _parseCoachPrestige(
@@ -374,7 +531,9 @@ extension GameStateSaveHandler on GameState {
     final value = (raw ?? '').toString();
 
     for (final prestige in CoachPrestige.values) {
-      if (prestige.name == value) return prestige;
+      if (prestige.name == value) {
+        return prestige;
+      }
     }
 
     return fallback;
@@ -386,8 +545,9 @@ extension GameStateSaveHandler on GameState {
         slotId: currentSaveSlotId,
         gs: this,
       );
-    } catch (e) {
-      debugPrint('Erro no autosave: $e');
+    } catch (error, stackTrace) {
+      debugPrint('Erro no autosave: $error');
+      debugPrint('$stackTrace');
     }
   }
 
@@ -401,8 +561,11 @@ extension GameStateSaveHandler on GameState {
     return out;
   }
 
-  void _restoreLeagueSeasonsFromSave(Map<String, dynamic> state) {
+  void _restoreLeagueSeasonsFromSave(
+    Map<String, dynamic> state,
+  ) {
     final raw = (state['leagueSeasons'] as Map?)?.cast<String, dynamic>();
+
     if (raw == null || raw.isEmpty) {
       _initializeTablesForAllDivisions();
       return;
@@ -412,9 +575,11 @@ extension GameStateSaveHandler on GameState {
 
     for (final entry in raw.entries) {
       final div = _parseDivisionId(entry.key);
+
       if (div == null) continue;
 
       final seasonMap = (entry.value as Map?)?.cast<String, dynamic>();
+
       if (seasonMap == null) continue;
 
       final season = LeagueSeasonBundle.fromJson(seasonMap);
@@ -434,40 +599,61 @@ extension GameStateSaveHandler on GameState {
     }
   }
 
-  void _restoreBrazilCupFromSave(Map<String, dynamic> state) {
+  void _restoreBrazilCupFromSave(
+    Map<String, dynamic> state,
+  ) {
     final raw = state['brazilCupFixtures'] as List?;
+
     if (raw == null) return;
 
     _brazilCupFixtures
       ..clear()
       ..addAll(
         raw.whereType<Map>().map(
-              (e) => _cupFixtureFromJson(e.cast<String, dynamic>()),
+              (e) => _cupFixtureFromJson(
+                e.cast<String, dynamic>(),
+              ),
             ),
       );
   }
 
   List<Player> _playersFromRawList(dynamic raw) {
     final list = raw as List?;
-    if (list == null) return <Player>[];
+
+    if (list == null) {
+      return <Player>[];
+    }
 
     return list
         .whereType<Map>()
-        .map((e) => Player.fromJson(e.cast<String, dynamic>()))
+        .map(
+          (e) => Player.fromJson(
+            e.cast<String, dynamic>(),
+          ),
+        )
         .toList();
   }
 
   List<ScoutTarget> _targetsFromRawList(dynamic raw) {
     final list = raw as List?;
-    if (list == null) return <ScoutTarget>[];
+
+    if (list == null) {
+      return <ScoutTarget>[];
+    }
 
     return list
         .whereType<Map>()
-        .map((e) => ScoutTarget.fromJson(e.cast<String, dynamic>()))
+        .map(
+          (e) => ScoutTarget.fromJson(
+            e.cast<String, dynamic>(),
+          ),
+        )
         .toList();
   }
 
-  GameMessageCategory _inferLegacyNewsCategory(String text) {
+  GameMessageCategory _inferLegacyNewsCategory(
+    String text,
+  ) {
     final lower = text.toLowerCase();
 
     if (lower.startsWith('finanças') ||
@@ -593,9 +779,15 @@ extension GameStateSaveHandler on GameState {
     return SimonBolivarGroupFixture(
       id: (json['id'] as String?) ?? '',
       competitionId: (json['competitionId'] as String?) ?? 'SBV',
-      seasonYear: _readInt(json['seasonYear'], fallback: _seasonYear),
+      seasonYear: _readInt(
+        json['seasonYear'],
+        fallback: _seasonYear,
+      ),
       groupId: (json['groupId'] as String?) ?? 'A',
-      round: _readInt(json['round'], fallback: 1),
+      round: _readInt(
+        json['round'],
+        fallback: 1,
+      ),
       homeClubId: (json['homeClubId'] as String?) ?? '',
       awayClubId: (json['awayClubId'] as String?) ?? '',
       date: parsedDate ?? DateTime(_seasonYear, 4, 3),
@@ -604,7 +796,9 @@ extension GameStateSaveHandler on GameState {
     );
   }
 
-  Map<String, dynamic> _cupFixtureToJson(CupFixture fixture) {
+  Map<String, dynamic> _cupFixtureToJson(
+    CupFixture fixture,
+  ) {
     return <String, dynamic>{
       'id': fixture.id,
       'competitionId': fixture.competitionId,
@@ -622,7 +816,9 @@ extension GameStateSaveHandler on GameState {
     };
   }
 
-  CupFixture _cupFixtureFromJson(Map<String, dynamic> json) {
+  CupFixture _cupFixtureFromJson(
+    Map<String, dynamic> json,
+  ) {
     final parsedDate = DateTime.tryParse(
       (json['date'] as String?) ?? '',
     );
@@ -630,10 +826,19 @@ extension GameStateSaveHandler on GameState {
     return CupFixture(
       id: (json['id'] as String?) ?? '',
       competitionId: (json['competitionId'] as String?) ?? 'CBR',
-      seasonYear: _readInt(json['seasonYear'], fallback: _seasonYear),
-      phase: _readInt(json['phase'], fallback: 1),
+      seasonYear: _readInt(
+        json['seasonYear'],
+        fallback: _seasonYear,
+      ),
+      phase: _readInt(
+        json['phase'],
+        fallback: 1,
+      ),
       phaseLabel: (json['phaseLabel'] as String?) ?? 'Mata-mata',
-      leg: _readInt(json['leg'], fallback: 1),
+      leg: _readInt(
+        json['leg'],
+        fallback: 1,
+      ),
       homeClubId: (json['homeClubId'] as String?) ?? '',
       awayClubId: (json['awayClubId'] as String?) ?? '',
       date: parsedDate ?? DateTime(_seasonYear, 7, 3),
@@ -644,7 +849,9 @@ extension GameStateSaveHandler on GameState {
     );
   }
 
-  Map<String, dynamic> _financeToJson(FinanceSnapshot finance) {
+  Map<String, dynamic> _financeToJson(
+    FinanceSnapshot finance,
+  ) {
     return <String, dynamic>{
       'caixa': finance.caixa,
       'operacional': finance.operacional,
@@ -659,23 +866,41 @@ extension GameStateSaveHandler on GameState {
     };
   }
 
-  FinanceSnapshot _financeFromJson(Map<String, dynamic> json) {
+  FinanceSnapshot _financeFromJson(
+    Map<String, dynamic> json,
+  ) {
     return FinanceSnapshot(
       caixa: _readInt(
         json['caixa'],
-        fallback: _readInt(json['balance'], fallback: 0),
+        fallback: _readInt(
+          json['balance'],
+          fallback: 0,
+        ),
       ),
       operacional: _readInt(
         json['operacional'],
-        fallback: _readInt(json['operationalCash'], fallback: 0),
+        fallback: _readInt(
+          json['operationalCash'],
+          fallback: 0,
+        ),
       ),
-      debt: _readInt(json['debt'], fallback: 0),
-      monthlyWage: _readInt(json['monthlyWage'], fallback: 0),
-      health: _parseFinanceHealth(json['health']),
+      debt: _readInt(
+        json['debt'],
+        fallback: 0,
+      ),
+      monthlyWage: _readInt(
+        json['monthlyWage'],
+        fallback: 0,
+      ),
+      health: _parseFinanceHealth(
+        json['health'],
+      ),
     );
   }
 
-  Map<String, dynamic> _structuresToJson(ClubStructures structures) {
+  Map<String, dynamic> _structuresToJson(
+    ClubStructures structures,
+  ) {
     return <String, dynamic>{
       'complexo': structures.complexo,
       'ct': structures.ct,
@@ -694,33 +919,46 @@ extension GameStateSaveHandler on GameState {
     switch ((raw ?? '').toString()) {
       case 'muitoSaudavel':
         return FinanceHealth.muitoSaudavel;
+
       case 'saudavel':
         return FinanceHealth.saudavel;
+
       case 'estavel':
         return FinanceHealth.estavel;
+
       case 'pressionado':
         return FinanceHealth.pressionado;
+
       case 'critico':
         return FinanceHealth.critico;
+
       case 'colapsoFinanceiro':
         return FinanceHealth.colapsoFinanceiro;
+
       default:
         return FinanceHealth.estavel;
     }
   }
 
-  String _financeHealthToString(FinanceHealth health) {
+  String _financeHealthToString(
+    FinanceHealth health,
+  ) {
     switch (health) {
       case FinanceHealth.muitoSaudavel:
         return 'muitoSaudavel';
+
       case FinanceHealth.saudavel:
         return 'saudavel';
+
       case FinanceHealth.estavel:
         return 'estavel';
+
       case FinanceHealth.pressionado:
         return 'pressionado';
+
       case FinanceHealth.critico:
         return 'critico';
+
       case FinanceHealth.colapsoFinanceiro:
         return 'colapsoFinanceiro';
     }
