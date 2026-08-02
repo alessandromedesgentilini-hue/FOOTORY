@@ -10,6 +10,7 @@ import 'package:footory26/models/continental/simon_bolivar_group_fixture.dart';
 import 'package:footory26/models/continental/simon_bolivar_season_result.dart';
 import 'package:footory26/models/continental/world_tournament_result.dart';
 import 'package:footory26/models/cup_fixture.dart';
+import 'package:footory26/models/director_career.dart';
 import 'package:footory26/models/fixture.dart';
 import 'package:footory26/models/football_director.dart';
 import 'package:footory26/models/league_table.dart';
@@ -128,6 +129,77 @@ class GameState extends ChangeNotifier {
     if (_footballDirector == null) return;
 
     _footballDirector = null;
+    notifyListeners();
+  }
+
+  DirectorCareer? _directorCareer;
+
+  DirectorCareer? get directorCareer => _directorCareer;
+
+  bool get hasDirectorCareer => _directorCareer != null;
+
+  DirectorCareer get directorCareerOrFallback {
+    final current = _directorCareer;
+
+    if (current != null) {
+      return current;
+    }
+
+    return DirectorCareer.initial(
+      seasonYear: _seasonYear,
+      clubId: userClubId,
+      clubName: userClubName,
+    );
+  }
+
+  void initializeDirectorCareer({
+    required int seasonYear,
+    required String clubId,
+    required String clubName,
+  }) {
+    final normalizedClubId = clubId.trim();
+    final normalizedClubName = clubName.trim();
+
+    if (normalizedClubId.isEmpty || normalizedClubName.isEmpty) {
+      return;
+    }
+
+    _directorCareer = DirectorCareer.initial(
+      seasonYear: seasonYear,
+      clubId: normalizedClubId,
+      clubName: normalizedClubName,
+    ).openClubSpell(
+      clubId: normalizedClubId,
+      clubName: normalizedClubName,
+      startYear: seasonYear,
+    );
+
+    notifyListeners();
+  }
+
+  void initializeDirectorCareerIfNeeded({
+    required int seasonYear,
+    required String clubId,
+    required String clubName,
+  }) {
+    if (_directorCareer != null) return;
+
+    initializeDirectorCareer(
+      seasonYear: seasonYear,
+      clubId: clubId,
+      clubName: clubName,
+    );
+  }
+
+  void restoreDirectorCareerFromSave(DirectorCareer? career) {
+    _directorCareer = career;
+    notifyListeners();
+  }
+
+  void clearDirectorCareer() {
+    if (_directorCareer == null) return;
+
+    _directorCareer = null;
     notifyListeners();
   }
 
@@ -614,6 +686,12 @@ class GameState extends ChangeNotifier {
       userClubName: userClubName,
     );
 
+    initializeDirectorCareer(
+      seasonYear: _seasonYear,
+      clubId: this.userClubId,
+      clubName: this.userClubName,
+    );
+
     _seedFinanceForWorldIfNeeded();
     _recalculateMonthlyWagesForWorld();
 
@@ -714,11 +792,43 @@ class GameState extends ChangeNotifier {
   void markAllMessagesAsRead() {
     _readNewsCount = _newsFeed.length;
     _readDepartmentMessagesCount = _departmentMessages.length;
+
+    _readMatchNewsCount = _countNewsInCategory(GameMessageCategory.match);
+    _readMarketNewsCount = _countNewsInCategory(GameMessageCategory.market) +
+        _countNewsInCategory(GameMessageCategory.transfer) +
+        _countNewsInCategory(GameMessageCategory.scout);
+    _readWorldNewsCount = _countNewsInCategory(GameMessageCategory.world);
+    _readFinanceNewsCount = _countNewsInCategory(GameMessageCategory.finance);
+    _readTrainingNewsCount = _countNewsInCategory(GameMessageCategory.training);
+    _readSeasonNewsCount = _countNewsInCategory(GameMessageCategory.season) +
+        _countNewsInCategory(GameMessageCategory.competition) +
+        _countNewsInCategory(GameMessageCategory.legacy) +
+        _countNewsInCategory(GameMessageCategory.board) +
+        _countNewsInCategory(GameMessageCategory.club) +
+        _countNewsInCategory(GameMessageCategory.system) +
+        _countNewsInCategory(GameMessageCategory.department);
+
     notifyListeners();
   }
 
   void markNewsAsRead() {
     _readNewsCount = _newsFeed.length;
+
+    _readMatchNewsCount = _countNewsInCategory(GameMessageCategory.match);
+    _readMarketNewsCount = _countNewsInCategory(GameMessageCategory.market) +
+        _countNewsInCategory(GameMessageCategory.transfer) +
+        _countNewsInCategory(GameMessageCategory.scout);
+    _readWorldNewsCount = _countNewsInCategory(GameMessageCategory.world);
+    _readFinanceNewsCount = _countNewsInCategory(GameMessageCategory.finance);
+    _readTrainingNewsCount = _countNewsInCategory(GameMessageCategory.training);
+    _readSeasonNewsCount = _countNewsInCategory(GameMessageCategory.season) +
+        _countNewsInCategory(GameMessageCategory.competition) +
+        _countNewsInCategory(GameMessageCategory.legacy) +
+        _countNewsInCategory(GameMessageCategory.board) +
+        _countNewsInCategory(GameMessageCategory.club) +
+        _countNewsInCategory(GameMessageCategory.system) +
+        _countNewsInCategory(GameMessageCategory.department);
+
     notifyListeners();
   }
 
@@ -768,6 +878,108 @@ class GameState extends ChangeNotifier {
 
     if (_readNewsCount > _newsFeed.length) {
       _readNewsCount = _newsFeed.length;
+    }
+  }
+
+  void _normalizeReadCountersAfterLoad() {
+    final matchCount = _countNewsInCategory(GameMessageCategory.match);
+    final marketCount = _countNewsInCategory(GameMessageCategory.market) +
+        _countNewsInCategory(GameMessageCategory.transfer) +
+        _countNewsInCategory(GameMessageCategory.scout);
+    final worldCount = _countNewsInCategory(GameMessageCategory.world);
+    final financeCount = _countNewsInCategory(GameMessageCategory.finance);
+    final trainingCount = _countNewsInCategory(GameMessageCategory.training);
+    final seasonCount = _countNewsInCategory(GameMessageCategory.season) +
+        _countNewsInCategory(GameMessageCategory.competition) +
+        _countNewsInCategory(GameMessageCategory.legacy) +
+        _countNewsInCategory(GameMessageCategory.board) +
+        _countNewsInCategory(GameMessageCategory.club) +
+        _countNewsInCategory(GameMessageCategory.system) +
+        _countNewsInCategory(GameMessageCategory.department);
+
+    _readMatchNewsCount = _readMatchNewsCount.clamp(0, matchCount);
+    _readMarketNewsCount = _readMarketNewsCount.clamp(0, marketCount);
+    _readWorldNewsCount = _readWorldNewsCount.clamp(0, worldCount);
+    _readFinanceNewsCount = _readFinanceNewsCount.clamp(0, financeCount);
+    _readTrainingNewsCount = _readTrainingNewsCount.clamp(0, trainingCount);
+    _readSeasonNewsCount = _readSeasonNewsCount.clamp(0, seasonCount);
+
+    _readNewsCount = _readMatchNewsCount +
+        _readMarketNewsCount +
+        _readWorldNewsCount +
+        _readFinanceNewsCount +
+        _readTrainingNewsCount +
+        _readSeasonNewsCount;
+
+    if (_readNewsCount > _newsFeed.length) {
+      _readNewsCount = _newsFeed.length;
+    }
+
+    _readDepartmentMessagesCount =
+        _readDepartmentMessagesCount.clamp(0, _departmentMessages.length);
+  }
+
+  int _countNewsInCategory(GameMessageCategory category) {
+    var count = 0;
+    for (final text in _newsFeed) {
+      final key = text.trim();
+      if (key.isEmpty) continue;
+      if (_newsCategoryByText[key] == category) {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  void _restoreLegacyCategoryReadCounters(int legacyReadNewsCount) {
+    _readMatchNewsCount = 0;
+    _readMarketNewsCount = 0;
+    _readWorldNewsCount = 0;
+    _readFinanceNewsCount = 0;
+    _readTrainingNewsCount = 0;
+    _readSeasonNewsCount = 0;
+
+    final normalizedReadCount =
+        legacyReadNewsCount.clamp(0, _newsFeed.length);
+
+    if (normalizedReadCount == 0) return;
+
+    final firstReadIndex = _newsFeed.length - normalizedReadCount;
+
+    for (int i = firstReadIndex; i < _newsFeed.length; i++) {
+      final text = _newsFeed[i].trim();
+      if (text.isEmpty) continue;
+
+      final category = newsCategoryOf(text);
+
+      switch (category) {
+        case GameMessageCategory.match:
+          _readMatchNewsCount++;
+          break;
+        case GameMessageCategory.market:
+        case GameMessageCategory.transfer:
+        case GameMessageCategory.scout:
+          _readMarketNewsCount++;
+          break;
+        case GameMessageCategory.world:
+          _readWorldNewsCount++;
+          break;
+        case GameMessageCategory.finance:
+          _readFinanceNewsCount++;
+          break;
+        case GameMessageCategory.training:
+          _readTrainingNewsCount++;
+          break;
+        case GameMessageCategory.season:
+        case GameMessageCategory.competition:
+        case GameMessageCategory.legacy:
+        case GameMessageCategory.board:
+        case GameMessageCategory.club:
+        case GameMessageCategory.system:
+        case GameMessageCategory.department:
+          _readSeasonNewsCount++;
+          break;
+      }
     }
   }
 

@@ -86,7 +86,8 @@ extension SeasonAnalysisHandler on GameState {
 
     if (upperUnique.length != 20 || lowerUnique.length != 20) {
       debugPrint(
-        '!!! swapBetweenDivs gerou listas inválidas: $upper=${upperUnique.length}, $lower=${lowerUnique.length}',
+        '!!! swapBetweenDivs gerou listas inválidas: '
+        '$upper=${upperUnique.length}, $lower=${lowerUnique.length}',
       );
     }
 
@@ -97,6 +98,7 @@ extension SeasonAnalysisHandler on GameState {
   DivisionId _findUserDivision() {
     for (final div in DivisionId.values) {
       final list = _clubIdsByDiv[div] ?? const <String>[];
+
       if (list.contains(userClubId)) {
         return div;
       }
@@ -105,16 +107,20 @@ extension SeasonAnalysisHandler on GameState {
     return DivisionId.brD;
   }
 
-  void _afterRoundUpdates({required int roundJustFinished}) {
+  void _afterRoundUpdates({
+    required int roundJustFinished,
+  }) {
     final pos = _userPositionOrNull();
     if (pos == null) return;
 
     final sorted = table.getSorted();
     final idx = sorted.indexWhere((e) => e.clubId == userClubId);
+
     if (idx < 0) return;
 
     final points = sorted[idx].points;
     final snap = _expectations;
+
     if (snap == null) return;
 
     if (!_checkpointService.isCheckpointRound(
@@ -132,7 +138,9 @@ extension SeasonAnalysisHandler on GameState {
       snap: snap,
     );
 
-    _insertNewsIfNew('${cp.title} — ${cp.body}');
+    _insertNewsIfNew(
+      '${cp.title} — ${cp.body}',
+    );
 
     final emotionalLine = _buildMidSeasonEmotionalLine(
       round: roundJustFinished,
@@ -153,19 +161,31 @@ extension SeasonAnalysisHandler on GameState {
 
     final sorted = table.getSorted();
     final idx = sorted.indexWhere((e) => e.clubId == userClubId);
+
     if (idx < 0) return;
 
     final points = sorted[idx].points;
 
     if (_expectations == null) {
-      _rebuildSeasonExpectations(userTablePosition: pos);
+      _rebuildSeasonExpectations(
+        userTablePosition: pos,
+      );
     }
 
     final snap = _expectations;
     if (snap == null) return;
 
-    final prize = _applyLeagueFinalPositionPrize(position: pos);
+    final prize = _applyLeagueFinalPositionPrize(
+      position: pos,
+    );
+
     final div = _userDiv();
+
+    if (pos == 1) {
+      _registerDirectorLeagueTrophy(
+        division: div,
+      );
+    }
 
     final context = SeasonNarrativeContext(
       clubName: userClubName,
@@ -187,19 +207,23 @@ extension SeasonAnalysisHandler on GameState {
       currentPower10: clubPower10(userClubId),
     );
 
-    final analysis = _seasonNarrativeAnalyzer.analyze(context);
+    final analysis = _seasonNarrativeAnalyzer.analyze(
+      context,
+    );
 
     final texts = _narrativeWriterService.writeEndSeasonNarrative(
       context: context,
       analysis: analysis,
     );
 
-    final msg =
-        'Fim de temporada — $posº lugar com $points pts. Expectativa inicial: ${snap.initialExpectedLabel}. Status atual: $userClubStatusLabel.';
+    final msg = 'Fim de temporada — $posº lugar com $points pts. '
+        'Expectativa inicial: ${snap.initialExpectedLabel}. '
+        'Status atual: $userClubStatusLabel.';
 
     _insertNewsIfNew(msg);
 
     final contextLine = texts.contextLine;
+
     if (contextLine != null && contextLine.isNotEmpty) {
       _insertNewsIfNew(contextLine);
     }
@@ -222,7 +246,8 @@ extension SeasonAnalysisHandler on GameState {
 
     if (prize > 0) {
       _insertNewsIfNew(
-        'FINANÇAS — Pela campanha na liga, o clube recebeu ${MoneyFormatter.formatCurrency(prize)} em premiação final.',
+        'FINANÇAS — Pela campanha na liga, o clube recebeu '
+        '${MoneyFormatter.formatCurrency(prize)} em premiação final.',
       );
     }
 
@@ -246,16 +271,75 @@ extension SeasonAnalysisHandler on GameState {
       newsFeed: _newsFeed,
     );
 
-    _insertNewsIfNew('Relatório da temporada disponível.');
+    _insertNewsIfNew(
+      'Relatório da temporada disponível.',
+    );
 
     _pendingCheckpoint = SeasonCheckpoint(
       round: _maxRound,
       phase: 'end',
       title: 'Fim de temporada',
-      body:
-          '$msg\n\n${texts.emotionLabel}\n\n${userClubStatus.narrativeContext}\n\n${texts.supporterLine}\n\n${texts.boardLine}\n\n${texts.pressLine}',
+      body: '$msg\n\n'
+          '${texts.emotionLabel}\n\n'
+          '${userClubStatus.narrativeContext}\n\n'
+          '${texts.supporterLine}\n\n'
+          '${texts.boardLine}\n\n'
+          '${texts.pressLine}',
       tag: analysis.checkpointTag,
     );
+  }
+
+  void _registerDirectorLeagueTrophy({
+    required DivisionId division,
+  }) {
+    _ensureDirectorCareerForCurrentSeason();
+
+    final career = _directorCareer;
+    if (career == null) return;
+
+    _directorCareer = career.registerTrophy(
+      competitionId: _leagueCompetitionId(division),
+      competitionName: _leagueCompetitionName(division),
+      seasonYear: _seasonYear,
+      clubId: userClubId,
+      clubName: userClubName,
+    );
+  }
+
+  String _leagueCompetitionId(
+    DivisionId division,
+  ) {
+    switch (division) {
+      case DivisionId.brA:
+        return 'BRA';
+
+      case DivisionId.brB:
+        return 'BRB';
+
+      case DivisionId.brC:
+        return 'BRC';
+
+      case DivisionId.brD:
+        return 'BRD';
+    }
+  }
+
+  String _leagueCompetitionName(
+    DivisionId division,
+  ) {
+    switch (division) {
+      case DivisionId.brA:
+        return 'Liga BR A';
+
+      case DivisionId.brB:
+        return 'Liga BR B';
+
+      case DivisionId.brC:
+        return 'Liga BR C';
+
+      case DivisionId.brD:
+        return 'Liga BR D';
+    }
   }
 
   int _applyLeagueFinalPositionPrize({
@@ -280,17 +364,24 @@ extension SeasonAnalysisHandler on GameState {
     return prize;
   }
 
-  void _rebuildSeasonExpectations({required int userTablePosition}) {
+  void _rebuildSeasonExpectations({
+    required int userTablePosition,
+  }) {
     final div = _parseDivisionId(divisionId) ?? DivisionId.brD;
+
     final userPower = clubPower10(userClubId);
     final previous = _expectations;
 
     final divisionIds = _clubIdsByDiv[div] ?? const <String>[];
+
     final divisionPowers = <double>[];
 
     for (final id in divisionIds) {
       if (id == userClubId) continue;
-      divisionPowers.add(clubCpuPower10(id));
+
+      divisionPowers.add(
+        clubCpuPower10(id),
+      );
     }
 
     divisionPowers.add(userPower);
@@ -308,18 +399,24 @@ extension SeasonAnalysisHandler on GameState {
   int _estimatePreSeasonUserTablePosition() {
     final div = _userDiv();
     final ids = _clubIdsByDiv[div] ?? const <String>[];
+
     if (ids.isEmpty) return 10;
 
     final powers = <double>[];
 
     for (final id in ids) {
-      powers.add(id == userClubId ? clubPower10(id) : clubCpuPower10(id));
+      powers.add(
+        id == userClubId ? clubPower10(id) : clubCpuPower10(id),
+      );
     }
 
-    powers.sort((a, b) => b.compareTo(a));
+    powers.sort(
+      (a, b) => b.compareTo(a),
+    );
 
     final userPower = clubPower10(userClubId);
     final idx = powers.indexOf(userPower);
+
     if (idx < 0) return 10;
 
     return (idx + 1).clamp(1, 20);
@@ -327,14 +424,19 @@ extension SeasonAnalysisHandler on GameState {
 
   int? _userPositionOrNull() {
     final sorted = table.getSorted();
-    final idx = sorted.indexWhere((e) => e.clubId == userClubId);
+
+    final idx = sorted.indexWhere(
+      (e) => e.clubId == userClubId,
+    );
 
     if (idx < 0) return null;
 
     return idx + 1;
   }
 
-  List<Player> _cloneSquad(List<Player> squad) {
+  List<Player> _cloneSquad(
+    List<Player> squad,
+  ) {
     return squad.map((p) => p.copyWith()).toList();
   }
 
@@ -346,25 +448,33 @@ extension SeasonAnalysisHandler on GameState {
 
     if (oldDiv == newDiv) {
       if (tier == ClubStatusTier.big || tier == ClubStatusTier.giant) {
-        return 'TEMPORADA — O $userClubName permanece na ${_divisionShortLabel(newDiv)}, mas pelo tamanho atual do clube a cobrança por protagonismo aumenta.';
+        return 'TEMPORADA — O $userClubName permanece na '
+            '${_divisionShortLabel(newDiv)}, mas pelo tamanho atual do '
+            'clube a cobrança por protagonismo aumenta.';
       }
 
-      return 'TEMPORADA — O $userClubName permanece na ${_divisionShortLabel(newDiv)} para o próximo ano.';
+      return 'TEMPORADA — O $userClubName permanece na '
+          '${_divisionShortLabel(newDiv)} para o próximo ano.';
     }
 
     if (_divisionRank(newDiv) < _divisionRank(oldDiv)) {
       if (tier == ClubStatusTier.tiny || tier == ClubStatusTier.small) {
-        return 'TEMPORADA HISTÓRICA — O $userClubName conquista o acesso e transforma a percepção sobre o tamanho do projeto.';
+        return 'TEMPORADA HISTÓRICA — O $userClubName conquista o '
+            'acesso e transforma a percepção sobre o tamanho do projeto.';
       }
 
-      return 'TEMPORADA HISTÓRICA — O $userClubName conquista o acesso e disputará a ${_divisionShortLabel(newDiv)} na próxima temporada.';
+      return 'TEMPORADA HISTÓRICA — O $userClubName conquista o acesso '
+          'e disputará a ${_divisionShortLabel(newDiv)} na próxima temporada.';
     }
 
     if (tier == ClubStatusTier.big || tier == ClubStatusTier.giant) {
-      return 'TEMPORADA CRÍTICA — O $userClubName sofre rebaixamento, resultado pesado para um clube tratado como ${userClubStatusLabel.toLowerCase()}.';
+      return 'TEMPORADA CRÍTICA — O $userClubName sofre rebaixamento, '
+          'resultado pesado para um clube tratado como '
+          '${userClubStatusLabel.toLowerCase()}.';
     }
 
-    return 'TEMPORADA DURA — O $userClubName sofre o rebaixamento e disputará a ${_divisionShortLabel(newDiv)} na próxima temporada.';
+    return 'TEMPORADA DURA — O $userClubName sofre o rebaixamento e '
+        'disputará a ${_divisionShortLabel(newDiv)} na próxima temporada.';
   }
 
   String _buildMidSeasonEmotionalLine({
@@ -382,54 +492,74 @@ extension SeasonAnalysisHandler on GameState {
     final snap = _expectations;
 
     if (snap != null && snap.isStrongAbove) {
-      return 'ATMOSFERA — Na $phase da liga, o $userClubName começa a transformar uma expectativa inicial de ${snap.initialExpectedLabel.toLowerCase()} em uma campanha muito acima do esperado.';
+      return 'ATMOSFERA — Na $phase da liga, o $userClubName começa a '
+          'transformar uma expectativa inicial de '
+          '${snap.initialExpectedLabel.toLowerCase()} em uma campanha '
+          'muito acima do esperado.';
     }
 
     if (snap != null && snap.isStrongBelow) {
-      return 'ATMOSFERA — Na $phase da liga, a pressão aumenta: a campanha está muito abaixo da régua inicial de ${snap.initialExpectedLabel.toLowerCase()}.';
+      return 'ATMOSFERA — Na $phase da liga, a pressão aumenta: '
+          'a campanha está muito abaixo da régua inicial de '
+          '${snap.initialExpectedLabel.toLowerCase()}.';
     }
 
     if (position <= 4) {
       if (tier == ClubStatusTier.tiny || tier == ClubStatusTier.small) {
-        return 'ATMOSFERA — Na $phase da liga, a torcida do $userClubName começa a tratar o G4 como um sonho possível e histórico.';
+        return 'ATMOSFERA — Na $phase da liga, a torcida do '
+            '$userClubName começa a tratar o G4 como um sonho possível '
+            'e histórico.';
       }
 
       if (tier == ClubStatusTier.giant) {
-        return 'ATMOSFERA — Na $phase da liga, o $userClubName segue no G4, mas a torcida ainda cobra briga direta por título.';
+        return 'ATMOSFERA — Na $phase da liga, o $userClubName segue '
+            'no G4, mas a torcida ainda cobra briga direta por título.';
       }
 
-      return 'ATMOSFERA — Na $phase da liga, a torcida do $userClubName começa a sonhar alto com a campanha no G4.';
+      return 'ATMOSFERA — Na $phase da liga, a torcida do '
+          '$userClubName começa a sonhar alto com a campanha no G4.';
     }
 
     if (position <= 8) {
       if (tier == ClubStatusTier.big || tier == ClubStatusTier.giant) {
-        return 'ATMOSFERA — Na $phase da liga, o $userClubName está competitivo, mas o tamanho atual do clube aumenta a cobrança por mais.';
+        return 'ATMOSFERA — Na $phase da liga, o $userClubName está '
+            'competitivo, mas o tamanho atual do clube aumenta a '
+            'cobrança por mais.';
       }
 
-      return 'ATMOSFERA — Na $phase da liga, o $userClubName se mantém competitivo e alimenta expectativa de brigar na parte de cima.';
+      return 'ATMOSFERA — Na $phase da liga, o $userClubName se mantém '
+          'competitivo e alimenta expectativa de brigar na parte de cima.';
     }
 
     if (position <= 12) {
       if (tier == ClubStatusTier.big || tier == ClubStatusTier.giant) {
-        return 'ATMOSFERA — Na $phase da liga, a campanha mediana incomoda porque já não combina com o status atual do $userClubName.';
+        return 'ATMOSFERA — Na $phase da liga, a campanha mediana '
+            'incomoda porque já não combina com o status atual do '
+            '$userClubName.';
       }
 
-      return 'ATMOSFERA — Na $phase da liga, o $userClubName vive uma campanha de equilíbrio, ainda procurando transformar regularidade em ambição.';
+      return 'ATMOSFERA — Na $phase da liga, o $userClubName vive uma '
+          'campanha de equilíbrio, ainda procurando transformar '
+          'regularidade em ambição.';
     }
 
     if (position <= 16) {
       if (tier == ClubStatusTier.tiny || tier == ClubStatusTier.small) {
-        return 'ATMOSFERA — Na $phase da liga, o clima é de tensão, mas sobreviver ainda faz parte do processo de crescimento.';
+        return 'ATMOSFERA — Na $phase da liga, o clima é de tensão, '
+            'mas sobreviver ainda faz parte do processo de crescimento.';
       }
 
-      return 'ATMOSFERA — Na $phase da liga, o clima é de atenção: o $userClubName precisa pontuar para afastar qualquer risco.';
+      return 'ATMOSFERA — Na $phase da liga, o clima é de atenção: '
+          'o $userClubName precisa pontuar para afastar qualquer risco.';
     }
 
     if (tier == ClubStatusTier.big || tier == ClubStatusTier.giant) {
-      return 'ATMOSFERA — Na $phase da liga, a pressão explode: um clube desse tamanho não pode normalizar risco de rebaixamento.';
+      return 'ATMOSFERA — Na $phase da liga, a pressão explode: '
+          'um clube desse tamanho não pode normalizar risco de rebaixamento.';
     }
 
-    return 'ATMOSFERA — Na $phase da liga, a pressão aumenta: o $userClubName entra em estado de alerta contra o rebaixamento.';
+    return 'ATMOSFERA — Na $phase da liga, a pressão aumenta: '
+        'o $userClubName entra em estado de alerta contra o rebaixamento.';
   }
 
   bool _isPromotionPosition({
@@ -437,6 +567,7 @@ extension SeasonAnalysisHandler on GameState {
     required int position,
   }) {
     if (division == DivisionId.brA) return false;
+
     return position <= 4;
   }
 
@@ -445,30 +576,41 @@ extension SeasonAnalysisHandler on GameState {
     required int position,
   }) {
     if (division == DivisionId.brD) return false;
+
     return position >= 17;
   }
 
-  int _divisionRank(DivisionId div) {
+  int _divisionRank(
+    DivisionId div,
+  ) {
     switch (div) {
       case DivisionId.brA:
         return 1;
+
       case DivisionId.brB:
         return 2;
+
       case DivisionId.brC:
         return 3;
+
       case DivisionId.brD:
         return 4;
     }
   }
 
-  String _divisionShortLabel(DivisionId div) {
+  String _divisionShortLabel(
+    DivisionId div,
+  ) {
     switch (div) {
       case DivisionId.brA:
         return 'Série A';
+
       case DivisionId.brB:
         return 'Série B';
+
       case DivisionId.brC:
         return 'Série C';
+
       case DivisionId.brD:
         return 'Série D';
     }

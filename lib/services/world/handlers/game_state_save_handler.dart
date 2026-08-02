@@ -11,7 +11,7 @@ extension GameStateSaveHandler on GameState {
     );
 
     return <String, dynamic>{
-      'saveVersion': 7,
+      'saveVersion': 9,
       'slotId': currentSaveSlotId,
       'clubId': userClubId,
       'clubName': userClubName,
@@ -23,6 +23,7 @@ extension GameStateSaveHandler on GameState {
       'currentDateIso': _currentDate.toIso8601String(),
       'seasonEnded': seasonEnded,
       'footballDirector': _footballDirector?.toMap(),
+      'directorCareer': _directorCareer?.toMap(),
       'coachStaffId': staff.id,
       'userCoachLevel': coachLevel,
       'coachStaff': <String, dynamic>{
@@ -100,6 +101,18 @@ extension GameStateSaveHandler on GameState {
       'newsCategories': _newsCategoryByText.map(
         (text, category) => MapEntry(text, category.name),
       ),
+      'departmentMessages': _departmentMessages.map((m) => <String, dynamic>{
+        'type': m.type.name,
+        'departmentType': m.departmentType.name,
+        'title': m.title,
+        'authorName': m.authorName,
+        'authorRole': m.authorRole,
+        'faceAsset': m.faceAsset,
+        'text': m.text,
+        'subtitle': m.subtitle,
+        'tag': m.tag,
+        'roundLabel': m.roundLabel,
+      }).toList(),
     };
   }
 
@@ -144,6 +157,7 @@ extension GameStateSaveHandler on GameState {
     );
 
     _restoreFootballDirectorFromSave(state);
+    _restoreDirectorCareerFromSave(state);
     _restoreCoachStaffFromSave(state);
     _restoreLeagueSeasonsFromSave(state);
     _restoreBrazilCupFromSave(state);
@@ -423,36 +437,106 @@ extension GameStateSaveHandler on GameState {
         fallback: 0,
       );
 
-      _readMatchNewsCount = _readInt(
-        readMap['readMatchNewsCount'],
-        fallback: 0,
-      );
+      final hasAllCategoryCounters =
+          readMap.containsKey('readMatchNewsCount') &&
+          readMap.containsKey('readMarketNewsCount') &&
+          readMap.containsKey('readWorldNewsCount') &&
+          readMap.containsKey('readFinanceNewsCount') &&
+          readMap.containsKey('readTrainingNewsCount') &&
+          readMap.containsKey('readSeasonNewsCount');
 
-      _readMarketNewsCount = _readInt(
-        readMap['readMarketNewsCount'],
-        fallback: 0,
-      );
+      if (hasAllCategoryCounters) {
+        _readMatchNewsCount = _readInt(
+          readMap['readMatchNewsCount'],
+          fallback: 0,
+        );
 
-      _readWorldNewsCount = _readInt(
-        readMap['readWorldNewsCount'],
-        fallback: 0,
-      );
+        _readMarketNewsCount = _readInt(
+          readMap['readMarketNewsCount'],
+          fallback: 0,
+        );
 
-      _readFinanceNewsCount = _readInt(
-        readMap['readFinanceNewsCount'],
-        fallback: 0,
-      );
+        _readWorldNewsCount = _readInt(
+          readMap['readWorldNewsCount'],
+          fallback: 0,
+        );
 
-      _readTrainingNewsCount = _readInt(
-        readMap['readTrainingNewsCount'],
-        fallback: 0,
-      );
+        _readFinanceNewsCount = _readInt(
+          readMap['readFinanceNewsCount'],
+          fallback: 0,
+        );
 
-      _readSeasonNewsCount = _readInt(
-        readMap['readSeasonNewsCount'],
-        fallback: 0,
-      );
+        _readTrainingNewsCount = _readInt(
+          readMap['readTrainingNewsCount'],
+          fallback: 0,
+        );
+
+        _readSeasonNewsCount = _readInt(
+          readMap['readSeasonNewsCount'],
+          fallback: 0,
+        );
+      }
     }
+
+    _departmentMessages.clear();
+
+    final rawDepartmentMessages = state['departmentMessages'] as List?;
+
+    if (rawDepartmentMessages != null) {
+      for (final entry in rawDepartmentMessages) {
+        if (entry is! Map) continue;
+
+        try {
+          final msgMap = entry.cast<String, dynamic>();
+
+          final typeStr = msgMap['type'] as String?;
+          final deptTypeStr = msgMap['departmentType'] as String?;
+
+          final type = DepartmentMessageType.values.firstWhere(
+            (e) => e.name == typeStr,
+            orElse: () => DepartmentMessageType.info,
+          );
+
+          final departmentType = DepartmentType.values.firstWhere(
+            (e) => e.name == deptTypeStr,
+            orElse: () => DepartmentType.sportsComplex,
+          );
+
+          _departmentMessages.add(
+            DepartmentMessage(
+              type: type,
+              departmentType: departmentType,
+              title: msgMap['title'] as String? ?? '',
+              authorName: msgMap['authorName'] as String? ?? '',
+              authorRole: msgMap['authorRole'] as String? ?? '',
+              faceAsset: msgMap['faceAsset'] as String? ?? '',
+              text: msgMap['text'] as String? ?? '',
+              subtitle: msgMap['subtitle'] as String? ?? '',
+              tag: msgMap['tag'] as String? ?? '',
+              roundLabel: msgMap['roundLabel'] as String?,
+            ),
+          );
+        } catch (error) {
+          debugPrint('Erro ao restaurar DepartmentMessage: $error');
+        }
+      }
+    }
+
+    if (readMap != null) {
+      final hasAllCategoryCounters =
+          readMap.containsKey('readMatchNewsCount') &&
+          readMap.containsKey('readMarketNewsCount') &&
+          readMap.containsKey('readWorldNewsCount') &&
+          readMap.containsKey('readFinanceNewsCount') &&
+          readMap.containsKey('readTrainingNewsCount') &&
+          readMap.containsKey('readSeasonNewsCount');
+
+      if (!hasAllCategoryCounters) {
+        _restoreLegacyCategoryReadCounters(_readNewsCount);
+      }
+    }
+
+    _normalizeReadCountersAfterLoad();
 
     _recalculateMonthlyWageForClub(userClubId);
     _syncUserDivisionViews();
@@ -482,6 +566,63 @@ extension GameStateSaveHandler on GameState {
 
       _footballDirector = null;
     }
+  }
+
+  void _restoreDirectorCareerFromSave(
+    Map<String, dynamic> state,
+  ) {
+    final rawCareer = state['directorCareer'];
+
+    if (rawCareer is! Map) {
+      _directorCareer = _buildLegacyDirectorCareerFallback();
+      return;
+    }
+
+    try {
+      final career = DirectorCareer.fromMap(
+        rawCareer.cast<String, dynamic>(),
+      );
+
+      final activeSeason = career.activeSeason;
+
+      final activeSeasonIsValid = activeSeason.seasonYear > 0 &&
+          activeSeason.clubId.trim().isNotEmpty &&
+          activeSeason.clubName.trim().isNotEmpty &&
+          activeSeason.isConsistent;
+
+      if (!activeSeasonIsValid) {
+        _directorCareer = _buildLegacyDirectorCareerFallback();
+        return;
+      }
+
+      _directorCareer = career;
+    } catch (error, stackTrace) {
+      debugPrint(
+        'Erro ao restaurar carreira do Diretor de Futebol: $error',
+      );
+      debugPrint('$stackTrace');
+
+      _directorCareer = _buildLegacyDirectorCareerFallback();
+    }
+  }
+
+  DirectorCareer? _buildLegacyDirectorCareerFallback() {
+    final normalizedClubId = userClubId.trim();
+    final normalizedClubName = userClubName.trim();
+
+    if (normalizedClubId.isEmpty || normalizedClubName.isEmpty) {
+      return null;
+    }
+
+    return DirectorCareer.initial(
+      seasonYear: _seasonYear,
+      clubId: normalizedClubId,
+      clubName: normalizedClubName,
+    ).openClubSpell(
+      clubId: normalizedClubId,
+      clubName: normalizedClubName,
+      startYear: _seasonYear,
+    );
   }
 
   void _restoreCoachStaffFromSave(

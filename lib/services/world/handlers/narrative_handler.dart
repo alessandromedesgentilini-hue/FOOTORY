@@ -16,7 +16,7 @@ extension NarrativeHandler on GameState {
         : _pickPrimaryNormalRoundNews(generatedNews);
 
     if (primary != null && primary.isNotEmpty) {
-      _insertNewsIfNew(primary);
+      _insertNewsIfNew(primary, category: GameMessageCategory.match);
     }
 
     final secondary =

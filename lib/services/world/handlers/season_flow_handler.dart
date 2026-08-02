@@ -40,7 +40,10 @@ extension SeasonFlowHandler on GameState {
       _rng = SeededRng(seed);
 
       _playerFactory = PlayerFactory(_rng);
-      _marketService = MarketService(rng: _rng, playerFactory: _playerFactory);
+      _marketService = MarketService(
+        rng: _rng,
+        playerFactory: _playerFactory,
+      );
       _scoutService = ScoutService(_rng);
 
       _newsFeed.clear();
@@ -91,6 +94,12 @@ extension SeasonFlowHandler on GameState {
 
       _annualYouthProcessed = false;
 
+      // Um novo jogo começa com uma carreira limpa.
+      //
+      // No carregamento, o GameStateSaveHandler restaurará a carreira
+      // persistida depois que o mundo-base for reconstruído.
+      _directorCareer = null;
+
       _bootstrapWorldFromCatalog();
 
       _userCoachLevel = clubCpuCoachLevel(userClubId).clamp(1, 10);
@@ -103,7 +112,7 @@ extension SeasonFlowHandler on GameState {
       _materializeObservedPlayersForClub(userClubId);
 
       _seasonStartSnapshot = _cloneSquad(
-        _proSquads[userClubId] ?? const [],
+        _proSquads[userClubId] ?? const <Player>[],
       );
 
       _bootstrapWorldLeagues();
@@ -259,7 +268,15 @@ extension SeasonFlowHandler on GameState {
             userSquad: _userMatchEventPool(),
           );
 
-          _updateUserStreak(userGoals, oppGoals);
+          _recordDirectorOfficialMatch(
+            goalsFor: userGoals,
+            goalsAgainst: oppGoals,
+          );
+
+          _updateUserStreak(
+            userGoals,
+            oppGoals,
+          );
 
           _applyLeagueMatchPrize(
             goalsFor: userGoals,
@@ -504,7 +521,16 @@ extension SeasonFlowHandler on GameState {
 
       _applyPromotionAndRelegation();
 
-      _seasonYear += 1;
+      final nextSeasonYear = _seasonYear + 1;
+
+      _advanceDirectorCareerToNextSeason(
+        nextSeasonYear: nextSeasonYear,
+      );
+
+      _seasonYear = nextSeasonYear;
+
+      _ageFootballDirector();
+
       seed = seed + 1;
 
       _rng = SeededRng(seed);
@@ -593,11 +619,11 @@ extension SeasonFlowHandler on GameState {
       _runCpuTransferWindow();
 
       _seasonStartSnapshot = _cloneSquad(
-        _proSquads[userClubId] ?? const [],
+        _proSquads[userClubId] ?? const <Player>[],
       );
 
       final squad = List<Player>.from(
-        _proSquads[userClubId] ?? const [],
+        _proSquads[userClubId] ?? const <Player>[],
       );
 
       if (squad.isNotEmpty) {
@@ -654,6 +680,66 @@ extension SeasonFlowHandler on GameState {
 
       notifyListeners();
     }
+  }
+
+  void _ensureDirectorCareerForCurrentSeason() {
+    if (_directorCareer != null) return;
+
+    final normalizedClubId = userClubId.trim();
+    final normalizedClubName = userClubName.trim();
+
+    if (normalizedClubId.isEmpty || normalizedClubName.isEmpty) {
+      return;
+    }
+
+    _directorCareer = DirectorCareer.initial(
+      seasonYear: _seasonYear,
+      clubId: normalizedClubId,
+      clubName: normalizedClubName,
+    ).openClubSpell(
+      clubId: normalizedClubId,
+      clubName: normalizedClubName,
+      startYear: _seasonYear,
+    );
+  }
+
+  void _recordDirectorOfficialMatch({
+    required int goalsFor,
+    required int goalsAgainst,
+  }) {
+    _ensureDirectorCareerForCurrentSeason();
+
+    final career = _directorCareer;
+    if (career == null) return;
+
+    _directorCareer = career.registerMatch(
+      goalsFor: goalsFor,
+      goalsAgainst: goalsAgainst,
+    );
+  }
+
+  void _advanceDirectorCareerToNextSeason({
+    required int nextSeasonYear,
+  }) {
+    _ensureDirectorCareerForCurrentSeason();
+
+    final career = _directorCareer;
+    if (career == null) return;
+
+    _directorCareer = career.startNewSeason(
+      seasonYear: nextSeasonYear,
+      clubId: userClubId,
+      clubName: userClubName,
+    );
+  }
+
+  void _ageFootballDirector() {
+    final director = _footballDirector;
+    if (director == null) return;
+
+    _footballDirector = director.copyWith(
+      age: director.age + 1,
+    );
   }
 
   void _tryRunWorldTournamentsAtSeasonEnd() {
@@ -757,6 +843,8 @@ extension SeasonFlowHandler on GameState {
     final current = _newsFeed[index].trim();
 
     if (current.contains(detail)) return;
+
+    _newsCategoryByText.remove(current);
 
     _newsFeed[index] = '$current $detail';
     _newsCategoryByText[_newsFeed[index].trim()] = GameMessageCategory.match;

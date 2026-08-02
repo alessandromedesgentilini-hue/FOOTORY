@@ -8,6 +8,8 @@ import 'package:footory26/models/player.dart';
 
 import 'package:footory26/pages/club/structures_page.dart';
 import 'package:footory26/pages/coach/coach_page.dart';
+import 'package:footory26/pages/director/football_director_page.dart';
+import 'package:footory26/pages/director/permanent_staff_page.dart';
 import 'package:footory26/pages/finance/finance_page.dart';
 import 'package:footory26/pages/market/market_page.dart';
 import 'package:footory26/pages/market/transfer_offer_dialog.dart';
@@ -514,6 +516,18 @@ class _MainHubPageState extends ConsumerState<MainHubPage> {
     );
   }
 
+  void _openDirector() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const FootballDirectorPage()),
+    );
+  }
+
+  void _openPermanentStaff() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const PermanentStaffPage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final GameState gs = ref.watch(gameStateProvider);
@@ -589,6 +603,8 @@ class _MainHubPageState extends ConsumerState<MainHubPage> {
                   onStructures: _openStructures,
                   onFinance: _openFinance,
                   onCoach: _openCoach,
+                  onDirector: _openDirector,
+                  onPermanentStaff: _openPermanentStaff,
                 ),
               ),
               const SizedBox(height: 6),
@@ -772,7 +788,7 @@ class _ClubHeroCard extends StatelessWidget {
                   const SizedBox(height: 7),
                   Row(
                     children: [
-                      _HeroMiniPill(label: 'Temporada'),
+                      const _HeroMiniPill(label: 'Temporada'),
                       const SizedBox(width: 6),
                       _HeroMiniPill(label: gs.dateStr),
                     ],
@@ -1035,7 +1051,7 @@ class _ClubBadge extends StatelessWidget {
         child: Image.asset(
           badgePath,
           fit: BoxFit.contain,
-          errorBuilder: (_, __, ___) => Icon(
+          errorBuilder: (_, __, ___) => const Icon(
             Icons.shield_rounded,
             size: 24,
             color: AppColors.primary,
@@ -1155,6 +1171,8 @@ class _HubLaunchActionGrid extends StatelessWidget {
   final VoidCallback onStructures;
   final VoidCallback onFinance;
   final VoidCallback onCoach;
+  final VoidCallback onDirector;
+  final VoidCallback onPermanentStaff;
 
   const _HubLaunchActionGrid({
     required this.unreadMessages,
@@ -1166,6 +1184,8 @@ class _HubLaunchActionGrid extends StatelessWidget {
     required this.onStructures,
     required this.onFinance,
     required this.onCoach,
+    required this.onDirector,
+    required this.onPermanentStaff,
   });
 
   @override
@@ -1173,8 +1193,9 @@ class _HubLaunchActionGrid extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         const gap = 7.0;
-        final tileHeight =
-            ((constraints.maxHeight - gap) / 2).clamp(62.0, 78.0).toDouble();
+        final tileHeight = ((constraints.maxHeight - gap * 2) / 3)
+            .clamp(58.0, 72.0)
+            .toDouble();
 
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -1245,10 +1266,34 @@ class _HubLaunchActionGrid extends StatelessWidget {
                 _HubActionTile(
                   height: tileHeight,
                   icon: Icons.groups_rounded,
-                  label: 'Comissão',
+                  label: 'Comissão Técnica',
                   subtitle: 'Staff',
                   onTap: onCoach,
                 ),
+              ],
+            ),
+            const SizedBox(height: gap),
+            Row(
+              children: [
+                _HubActionTile(
+                  height: tileHeight,
+                  icon: Icons.person_rounded,
+                  label: 'Diretor',
+                  subtitle: 'Perfil',
+                  onTap: onDirector,
+                ),
+                const SizedBox(width: 7),
+                _HubActionTile(
+                  height: tileHeight,
+                  icon: Icons.badge_rounded,
+                  label: 'Equipe Permanente',
+                  subtitle: 'Staff',
+                  onTap: onPermanentStaff,
+                ),
+                const SizedBox(width: 7),
+                const Expanded(child: SizedBox()),
+                const SizedBox(width: 7),
+                const Expanded(child: SizedBox()),
               ],
             ),
           ],

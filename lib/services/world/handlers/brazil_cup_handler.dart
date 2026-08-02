@@ -147,7 +147,10 @@ extension BrazilCupHandler on GameState {
         resolvedTies.add(update);
       }
 
+      _recordBrazilCupMatchInDirectorCareer(played);
+
       _applyBrazilCupMatchPrizeIfUserPlayed(played);
+
       _insertUserCupResultNews(
         fixture: played,
         tieUpdate: update,
@@ -160,6 +163,45 @@ extension BrazilCupHandler on GameState {
     );
 
     _maybeBuildNextBrazilCupPhase();
+  }
+
+  void _recordBrazilCupMatchInDirectorCareer(
+    CupFixture fixture,
+  ) {
+    final homeGoals = fixture.homeGoals;
+    final awayGoals = fixture.awayGoals;
+
+    if (homeGoals == null || awayGoals == null) return;
+
+    final userPlayed =
+        fixture.homeClubId == userClubId || fixture.awayClubId == userClubId;
+
+    if (!userPlayed) return;
+
+    final userGoals = fixture.homeClubId == userClubId ? homeGoals : awayGoals;
+
+    final opponentGoals =
+        fixture.homeClubId == userClubId ? awayGoals : homeGoals;
+
+    _recordDirectorOfficialMatch(
+      goalsFor: userGoals,
+      goalsAgainst: opponentGoals,
+    );
+  }
+
+  void _registerBrazilCupDirectorTrophy() {
+    _ensureDirectorCareerForCurrentSeason();
+
+    final career = _directorCareer;
+    if (career == null) return;
+
+    _directorCareer = career.registerTrophy(
+      competitionId: 'CBR',
+      competitionName: 'Copa Brasileira',
+      seasonYear: _seasonYear,
+      clubId: userClubId,
+      clubName: userClubName,
+    );
   }
 
   MatchResult _simulateCupFixture(CupFixture fx) {
@@ -338,6 +380,10 @@ extension BrazilCupHandler on GameState {
 
     if (fixture.phase == 6) {
       _applyBrazilCupFinalPrizeIfUserPlayed(fixture);
+
+      if (userWon) {
+        _registerBrazilCupDirectorTrophy();
+      }
 
       _insertNewsIfNew(
         userWon

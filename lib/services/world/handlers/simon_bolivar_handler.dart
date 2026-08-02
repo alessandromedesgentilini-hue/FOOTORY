@@ -235,10 +235,35 @@ extension SimonBolivarHandler on GameState {
 
       playedFixtures.add(updated);
 
+      _recordSimonBolivarGroupMatchInDirectorCareer(updated);
       _insertUserSimonBolivarResultNews(updated);
     }
 
     _insertSimonBolivarGroupRoundBulletin(playedFixtures);
+  }
+
+  void _recordSimonBolivarGroupMatchInDirectorCareer(
+    SimonBolivarGroupFixture fixture,
+  ) {
+    final homeGoals = fixture.homeGoals;
+    final awayGoals = fixture.awayGoals;
+
+    if (homeGoals == null || awayGoals == null) return;
+
+    final userPlayed =
+        fixture.homeClubId == userClubId || fixture.awayClubId == userClubId;
+
+    if (!userPlayed) return;
+
+    final userGoals = fixture.homeClubId == userClubId ? homeGoals : awayGoals;
+
+    final opponentGoals =
+        fixture.homeClubId == userClubId ? awayGoals : homeGoals;
+
+    _recordDirectorOfficialMatch(
+      goalsFor: userGoals,
+      goalsAgainst: opponentGoals,
+    );
   }
 
   MatchResult _simulateSimonBolivarGroupFixture(
@@ -316,6 +341,8 @@ extension SimonBolivarHandler on GameState {
         resolvedTies.add(update);
       }
 
+      _recordSimonBolivarKnockoutMatchInDirectorCareer(played);
+
       _insertUserSimonBolivarKnockoutResultNews(
         fixture: played,
         tieUpdate: update,
@@ -325,6 +352,45 @@ extension SimonBolivarHandler on GameState {
     _insertSimonBolivarKnockoutBulletin(
       playedFixtures: playedFixtures,
       resolvedTies: resolvedTies,
+    );
+  }
+
+  void _recordSimonBolivarKnockoutMatchInDirectorCareer(
+    CupFixture fixture,
+  ) {
+    final homeGoals = fixture.homeGoals;
+    final awayGoals = fixture.awayGoals;
+
+    if (homeGoals == null || awayGoals == null) return;
+
+    final userPlayed =
+        fixture.homeClubId == userClubId || fixture.awayClubId == userClubId;
+
+    if (!userPlayed) return;
+
+    final userGoals = fixture.homeClubId == userClubId ? homeGoals : awayGoals;
+
+    final opponentGoals =
+        fixture.homeClubId == userClubId ? awayGoals : homeGoals;
+
+    _recordDirectorOfficialMatch(
+      goalsFor: userGoals,
+      goalsAgainst: opponentGoals,
+    );
+  }
+
+  void _registerSimonBolivarDirectorTrophy() {
+    _ensureDirectorCareerForCurrentSeason();
+
+    final career = _directorCareer;
+    if (career == null) return;
+
+    _directorCareer = career.registerTrophy(
+      competitionId: 'SBV',
+      competitionName: 'Taça Simón Bolívar',
+      seasonYear: _seasonYear,
+      clubId: userClubId,
+      clubName: userClubName,
     );
   }
 
@@ -404,10 +470,15 @@ extension SimonBolivarHandler on GameState {
 
     if (championId == null) return;
 
+    if (championId == userClubId) {
+      _registerSimonBolivarDirectorTrophy();
+    }
+
     final championName = clubName(championId);
 
     final alreadyAnnounced = _newsFeed.any((line) {
       final text = line.toLowerCase();
+
       return text.contains('taça simón bolívar') &&
           text.contains(championName.toLowerCase()) &&
           text.contains('grande campeão continental');
@@ -527,11 +598,16 @@ extension SimonBolivarHandler on GameState {
     final opponentName = _opponentNameFromCupFixture(fixture);
 
     if (fixture.phase == 4) {
+      if (userWon) {
+        _registerSimonBolivarDirectorTrophy();
+      }
+
       _insertNewsIfNew(
         userWon
             ? 'Taça Simón Bolívar — O $userClubName é campeão continental! Vitória sobre $opponentName$penaltyText na grande final.'
             : 'Taça Simón Bolívar — O $userClubName fica com o vice continental após a final contra $opponentName$penaltyText.',
       );
+
       return;
     }
 
@@ -543,8 +619,14 @@ extension SimonBolivarHandler on GameState {
   }
 
   String _opponentNameFromCupFixture(CupFixture fixture) {
-    if (fixture.homeClubId == userClubId) return clubName(fixture.awayClubId);
-    if (fixture.awayClubId == userClubId) return clubName(fixture.homeClubId);
+    if (fixture.homeClubId == userClubId) {
+      return clubName(fixture.awayClubId);
+    }
+
+    if (fixture.awayClubId == userClubId) {
+      return clubName(fixture.homeClubId);
+    }
+
     return 'o adversário';
   }
 

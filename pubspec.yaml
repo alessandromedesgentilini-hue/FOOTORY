@@ -145,6 +145,8 @@ flutter:
     # FACES GERAIS
     # =========================
     - assets/faces/staff/
+    - assets/faces/directors/
+    - assets/faces/permanent_staff/
 
     # =========================
     # JOGADORES
