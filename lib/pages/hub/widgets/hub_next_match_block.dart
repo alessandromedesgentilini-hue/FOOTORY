@@ -19,7 +19,7 @@ class HubNextMatchBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isUserHome = fx.homeClubId == gs.userClubId;
-    final userSide = isUserHome ? 'Mandante' : 'Visitante';
+    final opponentId = isUserHome ? fx.awayClubId : fx.homeClubId;
 
     final homeName = gs.clubName(fx.homeClubId);
     final awayName = gs.clubName(fx.awayClubId);
@@ -28,275 +28,437 @@ class HubNextMatchBlock extends StatelessWidget {
     final awayClub = BrazilClubCatalog.byId(fx.awayClubId);
 
     final homeBadge = homeClub?.badgeAsset ?? 'assets/faces/_placeholder.png';
-
     final awayBadge = awayClub?.badgeAsset ?? 'assets/faces/_placeholder.png';
 
-    final userSnap = snapFromPower10(gs.clubPower10(gs.userClubId));
-    final oppId = isUserHome ? fx.awayClubId : fx.homeClubId;
-    final oppSnap = snapFromPower10(gs.clubBasePower(oppId));
+    final userPower = snapFromPower10(
+      gs.clubPower10(gs.userClubId),
+    );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    final opponentPower = snapFromPower10(
+      gs.clubPower10(opponentId),
+    );
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(13, 12, 13, 13),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: AppColors.border,
+        ),
+        boxShadow: AppColors.cardShadow,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _MatchHeader(
+            round: fx.round,
+            sideLabel: isUserHome ? 'Mandante' : 'Visitante',
+          ),
+          const SizedBox(height: 13),
+          _MatchVersus(
+            homeName: homeName,
+            awayName: awayName,
+            homeBadge: homeBadge,
+            awayBadge: awayBadge,
+            userClubId: gs.userClubId,
+            homeClubId: fx.homeClubId,
+            awayClubId: fx.awayClubId,
+          ),
+          const SizedBox(height: 13),
+          _PowerComparison(
+            userPower: userPower,
+            opponentPower: opponentPower,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MatchHeader extends StatelessWidget {
+  final int round;
+  final String sideLabel;
+
+  const _MatchHeader({
+    required this.round,
+    required this.sideLabel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Row(
       children: [
-        _MatchVersusCard(
-          homeName: homeName,
-          awayName: awayName,
-          homeBadge: homeBadge,
-          awayBadge: awayBadge,
+        Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: AppColors.primarySoft,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: const Icon(
+            Icons.sports_soccer_rounded,
+            size: 18,
+            color: AppColors.primary,
+          ),
         ),
-        const SizedBox(height: 14),
-        Align(
-          alignment: Alignment.centerRight,
-          child: _SidePill(text: userSide),
+        const SizedBox(width: 9),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Próximo jogo',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: textTheme.titleSmall?.copyWith(
+                  color: AppColors.text,
+                  fontWeight: FontWeight.w900,
+                  height: 1,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                'Rodada $round',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: textTheme.labelSmall?.copyWith(
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
         ),
-        const SizedBox(height: 14),
-        _PowerInfoCard(
-          label: 'Sua Força',
-          stars5: userSnap.stars5,
-          value: userSnap.label10,
-          icon: Icons.shield_outlined,
-        ),
-        const SizedBox(height: 10),
-        _PowerInfoCard(
-          label: 'Adversário',
-          stars5: oppSnap.stars5,
-          value: oppSnap.label10,
-          icon: Icons.sports_soccer_rounded,
+        const SizedBox(width: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 10,
+            vertical: 6,
+          ),
+          decoration: BoxDecoration(
+            color: AppColors.accentSoft,
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(
+              color: AppColors.accentDark.withOpacity(0.10),
+            ),
+          ),
+          child: Text(
+            sideLabel,
+            style: textTheme.labelSmall?.copyWith(
+              color: AppColors.accentDark,
+              fontSize: 10,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
         ),
       ],
     );
   }
 }
 
-class _MatchVersusCard extends StatelessWidget {
+class _MatchVersus extends StatelessWidget {
   final String homeName;
   final String awayName;
   final String homeBadge;
   final String awayBadge;
+  final String userClubId;
+  final String homeClubId;
+  final String awayClubId;
 
-  const _MatchVersusCard({
+  const _MatchVersus({
     required this.homeName,
     required this.awayName,
     required this.homeBadge,
     required this.awayBadge,
+    required this.userClubId,
+    required this.homeClubId,
+    required this.awayClubId,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceSoft,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: _ClubFace(
-              badgePath: homeBadge,
-              clubName: homeName,
-              alignEnd: false,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Text(
-              'vs',
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-          ),
-          Expanded(
-            child: _ClubFace(
-              badgePath: awayBadge,
-              clubName: awayName,
-              alignEnd: true,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ClubFace extends StatelessWidget {
-  final String badgePath;
-  final String clubName;
-  final bool alignEnd;
-
-  const _ClubFace({
-    required this.badgePath,
-    required this.clubName,
-    required this.alignEnd,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Row(
-      mainAxisAlignment:
-          alignEnd ? MainAxisAlignment.end : MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (!alignEnd) ...[
-          _Crest(assetPath: badgePath),
-          const SizedBox(width: 10),
-        ],
         Expanded(
-          child: Text(
-            clubName,
-            textAlign: alignEnd ? TextAlign.end : TextAlign.start,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            softWrap: false,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w800,
-              color: AppColors.text,
-              height: 1.1,
-            ),
+          child: _ClubSide(
+            clubName: homeName,
+            badgePath: homeBadge,
+            isUserClub: homeClubId == userClubId,
           ),
         ),
-        if (alignEnd) ...[
-          const SizedBox(width: 10),
-          _Crest(assetPath: badgePath),
-        ],
+        const SizedBox(width: 8),
+        const _VersusMark(),
+        const SizedBox(width: 8),
+        Expanded(
+          child: _ClubSide(
+            clubName: awayName,
+            badgePath: awayBadge,
+            isUserClub: awayClubId == userClubId,
+          ),
+        ),
       ],
     );
   }
 }
 
-class _Crest extends StatelessWidget {
-  final String assetPath;
+class _ClubSide extends StatelessWidget {
+  final String clubName;
+  final String badgePath;
+  final bool isUserClub;
 
-  const _Crest({
-    required this.assetPath,
+  const _ClubSide({
+    required this.clubName,
+    required this.badgePath,
+    required this.isUserClub,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 70,
-      height: 70,
-      padding: const EdgeInsets.all(2),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Image.asset(
-          assetPath,
-          fit: BoxFit.contain,
-          errorBuilder: (_, __, ___) => const Icon(
-            Icons.shield_outlined,
-            color: AppColors.textMuted,
-            size: 30,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SidePill extends StatelessWidget {
-  final String text;
-
-  const _SidePill({
-    required this.text,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final textTheme = Theme.of(context).textTheme;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+      padding: const EdgeInsets.fromLTRB(7, 9, 7, 8),
       decoration: BoxDecoration(
-        color: AppColors.accentSoft,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        text,
-        style: theme.textTheme.labelLarge?.copyWith(
-          color: AppColors.accentDark,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
-    );
-  }
-}
-
-class _PowerInfoCard extends StatelessWidget {
-  final String label;
-  final int stars5;
-  final String value;
-  final IconData icon;
-
-  const _PowerInfoCard({
-    required this.label,
-    required this.stars5,
-    required this.value,
-    required this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(13),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceSoft,
+        color: isUserClub
+            ? AppColors.primarySoft.withOpacity(0.52)
+            : AppColors.surfaceSoft,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(
+          color: isUserClub
+              ? AppColors.primary.withOpacity(0.18)
+              : AppColors.border,
+        ),
       ),
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.border),
-            ),
-            child: Icon(
-              icon,
-              size: 20,
-              color: AppColors.primary,
-            ),
+          _ClubCrest(
+            assetPath: badgePath,
+            highlighted: isUserClub,
           ),
-          const SizedBox(width: 12),
-          SizedBox(
-            width: 96,
-            child: Text(
-              label,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          HubStars5(filled: stars5, size: 18),
-          const SizedBox(width: 8),
+          const SizedBox(height: 7),
           Text(
-            value,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w900,
+            clubName,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: textTheme.labelMedium?.copyWith(
               color: AppColors.text,
+              fontWeight: FontWeight.w900,
+              height: 1.05,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            isUserClub ? 'Seu clube' : 'Adversário',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: textTheme.labelSmall?.copyWith(
+              color:
+                  isUserClub ? AppColors.primaryDark : AppColors.textSecondary,
+              fontSize: 9,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _ClubCrest extends StatelessWidget {
+  final String assetPath;
+  final bool highlighted;
+
+  const _ClubCrest({
+    required this.assetPath,
+    required this.highlighted,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 56,
+      height: 56,
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(
+          color: highlighted
+              ? AppColors.primary.withOpacity(0.22)
+              : AppColors.border,
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(11),
+        child: Image.asset(
+          assetPath,
+          fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) {
+            return const Center(
+              child: Icon(
+                Icons.shield_rounded,
+                color: AppColors.textMuted,
+                size: 29,
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _VersusMark extends StatelessWidget {
+  const _VersusMark();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 29),
+      child: Container(
+        width: 34,
+        height: 34,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: AppColors.primarySoft,
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: AppColors.primary.withOpacity(0.14),
+          ),
+        ),
+        child: Text(
+          'VS',
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: AppColors.primaryDark,
+                fontSize: 10,
+                fontWeight: FontWeight.w900,
+              ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PowerComparison extends StatelessWidget {
+  final dynamic userPower;
+  final dynamic opponentPower;
+
+  const _PowerComparison({
+    required this.userPower,
+    required this.opponentPower,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(10, 9, 10, 9),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceSoft,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(
+          color: AppColors.border,
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _PowerSide(
+              label: 'Sua força',
+              stars: userPower.stars5,
+              value: userPower.label10,
+              alignment: CrossAxisAlignment.start,
+            ),
+          ),
+          Container(
+            width: 1,
+            height: 34,
+            margin: const EdgeInsets.symmetric(horizontal: 9),
+            color: AppColors.border,
+          ),
+          Expanded(
+            child: _PowerSide(
+              label: 'Adversário',
+              stars: opponentPower.stars5,
+              value: opponentPower.label10,
+              alignment: CrossAxisAlignment.end,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PowerSide extends StatelessWidget {
+  final String label;
+  final int stars;
+  final String value;
+  final CrossAxisAlignment alignment;
+
+  const _PowerSide({
+    required this.label,
+    required this.stars,
+    required this.value,
+    required this.alignment,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final alignRight = alignment == CrossAxisAlignment.end;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: alignment,
+      children: [
+        Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: textTheme.labelSmall?.copyWith(
+            color: AppColors.textSecondary,
+            fontSize: 9.5,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 5),
+        Row(
+          mainAxisAlignment:
+              alignRight ? MainAxisAlignment.end : MainAxisAlignment.start,
+          children: [
+            if (!alignRight) ...[
+              HubStars5(
+                filled: stars,
+                size: 13,
+              ),
+              const SizedBox(width: 6),
+            ],
+            Text(
+              value,
+              style: textTheme.labelMedium?.copyWith(
+                color: AppColors.text,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            if (alignRight) ...[
+              const SizedBox(width: 6),
+              HubStars5(
+                filled: stars,
+                size: 13,
+              ),
+            ],
+          ],
+        ),
+      ],
     );
   }
 }
