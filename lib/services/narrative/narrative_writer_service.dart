@@ -29,6 +29,7 @@ class NarrativeWriterService {
   EndSeasonNarrativeTexts writeEndSeasonNarrative({
     required SeasonNarrativeContext context,
     required SeasonNarrativeAnalysis analysis,
+    required int boardPrestige,
   }) {
     final emotionLabel = _emotionLabel(
       analysis.seasonEmotion,
@@ -55,6 +56,7 @@ class NarrativeWriterService {
       boardLine: _boardLine(
         context,
         analysis,
+        boardPrestige: boardPrestige,
       ),
       pressLine: _pressLine(
         context,
@@ -161,26 +163,125 @@ class NarrativeWriterService {
 
   String _boardLine(
     SeasonNarrativeContext context,
-    SeasonNarrativeAnalysis analysis,
-  ) {
+    SeasonNarrativeAnalysis analysis, {
+    required int boardPrestige,
+  }) {
+    final prestige = boardPrestige.clamp(1, 10).toInt();
+
     switch (analysis.boardMood) {
       case BoardMood.thrilled:
-        return 'DIRETORIA — Internamente, a temporada fortalece muito a confiança no planejamento esportivo do clube.';
+        if (prestige >= 10) {
+          return 'DIRETORIA — A temporada reforça uma relação já histórica. A diretoria reconhece o trabalho como parte central da trajetória recente do clube e deposita confiança total na continuidade do projeto.';
+        }
+
+        if (prestige >= 8) {
+          return 'DIRETORIA — A temporada amplia ainda mais o prestígio do diretor. Internamente, o planejamento esportivo é tratado com grande respeito e confiança.';
+        }
+
+        if (prestige >= 5) {
+          return 'DIRETORIA — A temporada consolida a confiança no trabalho desenvolvido e fortalece de forma significativa a relação com o planejamento esportivo.';
+        }
+
+        if (prestige >= 3) {
+          return 'DIRETORIA — O resultado causa forte entusiasmo e acelera a construção de confiança no trabalho do diretor.';
+        }
+
+        return 'DIRETORIA — A temporada causa excelente impressão e representa um passo importante para construir confiança no planejamento esportivo.';
 
       case BoardMood.satisfied:
-        return 'DIRETORIA — A diretoria considera que o resultado final superou a régua estabelecida no início do campeonato.';
+        if (prestige >= 10) {
+          return 'DIRETORIA — A diretoria considera que o resultado superou a régua inicial e reconhece mais uma contribuição relevante de um trabalho já marcado na história do clube.';
+        }
+
+        if (prestige >= 8) {
+          return 'DIRETORIA — O resultado supera a régua estabelecida e reforça a elevada confiança da diretoria no trabalho que vem sendo realizado.';
+        }
+
+        if (prestige >= 5) {
+          return 'DIRETORIA — A diretoria considera que o resultado superou a régua inicial e entende que o trabalho segue justificando a confiança conquistada.';
+        }
+
+        if (prestige >= 3) {
+          return 'DIRETORIA — O resultado supera a régua estabelecida e contribui para fortalecer a confiança no planejamento esportivo.';
+        }
+
+        return 'DIRETORIA — O resultado supera a régua estabelecida e gera uma avaliação positiva sobre os primeiros passos do trabalho.';
 
       case BoardMood.acceptable:
-        return 'DIRETORIA — A avaliação interna é de uma temporada dentro de uma margem considerada aceitável para o contexto do clube.';
+        if (prestige >= 10) {
+          return 'DIRETORIA — A temporada termina dentro de uma margem aceitável. O histórico construído garante confiança, embora a diretoria espere um novo avanço no próximo ano.';
+        }
+
+        if (prestige >= 8) {
+          return 'DIRETORIA — A avaliação é de uma temporada aceitável. O trabalho acumulado preserva a confiança, mas a diretoria espera evolução na próxima campanha.';
+        }
+
+        if (prestige >= 5) {
+          return 'DIRETORIA — A temporada fica dentro de uma margem aceitável. A confiança permanece, acompanhada da expectativa de evolução.';
+        }
+
+        if (prestige >= 3) {
+          return 'DIRETORIA — A avaliação interna é de uma temporada aceitável, ainda sem conclusões definitivas sobre a consolidação do trabalho.';
+        }
+
+        return 'DIRETORIA — A temporada é considerada aceitável para o contexto do clube, mas a relação ainda está em fase inicial de avaliação.';
 
       case BoardMood.alert:
-        return 'DIRETORIA — Apesar do contexto difícil, a diretoria entende que será necessário responder rápido na próxima temporada.';
+        if (prestige >= 10) {
+          return 'DIRETORIA — A diretoria reconhece o peso histórico do trabalho, mas deixa claro que o contexto exige resposta rápida e correções importantes na próxima temporada.';
+        }
+
+        if (prestige >= 8) {
+          return 'DIRETORIA — O crédito acumulado mantém a confiança no diretor, mas a diretoria cobra uma resposta rápida e consistente na próxima temporada.';
+        }
+
+        if (prestige >= 5) {
+          return 'DIRETORIA — A confiança construída evita uma reação precipitada, mas será necessário responder rapidamente na próxima temporada.';
+        }
+
+        if (prestige >= 3) {
+          return 'DIRETORIA — O contexto acende um alerta e interrompe parte do avanço na relação de confiança. A próxima temporada exigirá resposta rápida.';
+        }
+
+        return 'DIRETORIA — O contexto difícil acende um alerta precoce. A diretoria espera uma resposta rápida para aumentar a confiança no trabalho.';
 
       case BoardMood.disappointed:
-        return 'DIRETORIA — O desempenho gera frustração interna e aumenta a cobrança por evolução competitiva.';
+        if (prestige >= 10) {
+          return 'DIRETORIA — A temporada gera forte frustração, mesmo diante de uma trajetória histórica. A diretoria preserva o respeito pelo trabalho, mas cobra uma reação firme.';
+        }
+
+        if (prestige >= 8) {
+          return 'DIRETORIA — O desempenho gera frustração interna. O prestígio acumulado garante respeito e confiança, mas aumenta também a responsabilidade por uma reação.';
+        }
+
+        if (prestige >= 5) {
+          return 'DIRETORIA — O desempenho gera frustração e desgasta parte da confiança conquistada. A cobrança por evolução será maior na próxima temporada.';
+        }
+
+        if (prestige >= 3) {
+          return 'DIRETORIA — A frustração interna interrompe a construção de confiança e aumenta de forma clara a cobrança sobre o planejamento esportivo.';
+        }
+
+        return 'DIRETORIA — O desempenho gera frustração em uma relação ainda pouco consolidada e aumenta significativamente a cobrança por resultados.';
 
       case BoardMood.crisis:
-        return 'DIRETORIA — A temporada aumenta drasticamente a pressão sobre o planejamento esportivo do clube.';
+        if (prestige >= 10) {
+          return 'DIRETORIA — A temporada provoca uma crise esportiva grave. Nem mesmo o peso histórico do trabalho elimina a cobrança por mudanças profundas e resposta imediata.';
+        }
+
+        if (prestige >= 8) {
+          return 'DIRETORIA — A crise esportiva coloca o planejamento sob forte pressão. O prestígio acumulado preserva o respeito pelo diretor, mas não reduz a exigência por mudanças imediatas.';
+        }
+
+        if (prestige >= 5) {
+          return 'DIRETORIA — A temporada coloca o planejamento esportivo em crise e consome parte importante da confiança construída. A resposta terá de ser imediata.';
+        }
+
+        if (prestige >= 3) {
+          return 'DIRETORIA — A temporada provoca uma crise interna e abala fortemente uma relação de confiança que ainda estava em construção.';
+        }
+
+        return 'DIRETORIA — A temporada provoca uma crise esportiva e coloca o planejamento sob pressão máxima em uma relação ainda sem crédito acumulado.';
     }
   }
 

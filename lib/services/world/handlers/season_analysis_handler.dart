@@ -187,6 +187,52 @@ extension SeasonAnalysisHandler on GameState {
       );
     }
 
+    _ensureDirectorCareerForCurrentSeason();
+
+    var boardPrestige = 1;
+
+    final careerBeforePrestigeUpdate = _directorCareer;
+
+    if (careerBeforePrestigeUpdate != null) {
+      DirectorClubSpell? activeClubSpell;
+
+      for (final spell in careerBeforePrestigeUpdate.clubSpells.reversed) {
+        if (spell.isActive) {
+          activeClubSpell = spell;
+          break;
+        }
+      }
+
+      final currentBoardPrestige = activeClubSpell?.boardPrestige ?? 1;
+
+      var boardPrestigeChange = 1;
+
+      if (snap.isStrongAbove) {
+        boardPrestigeChange += 1;
+      } else if (snap.isStrongBelow) {
+        boardPrestigeChange -= 1;
+      }
+
+      final wonTitleThisSeason = careerBeforePrestigeUpdate.trophies.any(
+        (trophy) {
+          return trophy.seasonYear == _seasonYear &&
+              trophy.clubId == userClubId;
+        },
+      );
+
+      if (wonTitleThisSeason) {
+        boardPrestigeChange += 1;
+      }
+
+      boardPrestige =
+          (currentBoardPrestige + boardPrestigeChange).clamp(1, 10).toInt();
+
+      _directorCareer =
+          careerBeforePrestigeUpdate.updateActiveClubSpellBoardPrestige(
+        boardPrestige,
+      );
+    }
+
     final context = SeasonNarrativeContext(
       clubName: userClubName,
       division: div,
@@ -214,6 +260,7 @@ extension SeasonAnalysisHandler on GameState {
     final texts = _narrativeWriterService.writeEndSeasonNarrative(
       context: context,
       analysis: analysis,
+      boardPrestige: boardPrestige,
     );
 
     final msg = 'Fim de temporada — $posº lugar com $points pts. '

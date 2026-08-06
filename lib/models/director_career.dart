@@ -199,6 +199,7 @@ class DirectorCareer {
           clubId: normalizedClubId,
           clubName: clubName.trim(),
           startYear: startYear,
+          boardPrestige: 1,
         ),
       ],
     );
@@ -229,6 +230,33 @@ class DirectorCareer {
             trophy.seasonYear >= currentSpell.startYear &&
             trophy.seasonYear <= endYear;
       }).length,
+    );
+
+    return copyWith(
+      clubSpells: updatedSpells,
+    );
+  }
+
+  DirectorCareer updateActiveClubSpellBoardPrestige(
+    int boardPrestige,
+  ) {
+    final index = clubSpells.lastIndexWhere((spell) => spell.isActive);
+
+    if (index < 0) {
+      return this;
+    }
+
+    final normalizedBoardPrestige = boardPrestige.clamp(1, 10).toInt();
+    final currentSpell = clubSpells[index];
+
+    if (currentSpell.boardPrestige == normalizedBoardPrestige) {
+      return this;
+    }
+
+    final updatedSpells = List<DirectorClubSpell>.from(clubSpells);
+
+    updatedSpells[index] = currentSpell.copyWith(
+      boardPrestige: normalizedBoardPrestige,
     );
 
     return copyWith(
@@ -517,6 +545,7 @@ class DirectorClubSpell {
   final int draws;
   final int losses;
   final int trophyCount;
+  final int boardPrestige;
 
   const DirectorClubSpell({
     required this.clubId,
@@ -528,6 +557,7 @@ class DirectorClubSpell {
     this.draws = 0,
     this.losses = 0,
     this.trophyCount = 0,
+    this.boardPrestige = 1,
   });
 
   bool get isActive => endYear == null;
@@ -563,6 +593,7 @@ class DirectorClubSpell {
     int? draws,
     int? losses,
     int? trophyCount,
+    int? boardPrestige,
   }) {
     return DirectorClubSpell(
       clubId: clubId ?? this.clubId,
@@ -574,6 +605,7 @@ class DirectorClubSpell {
       draws: draws ?? this.draws,
       losses: losses ?? this.losses,
       trophyCount: trophyCount ?? this.trophyCount,
+      boardPrestige: (boardPrestige ?? this.boardPrestige).clamp(1, 10).toInt(),
     );
   }
 
@@ -588,6 +620,7 @@ class DirectorClubSpell {
       'draws': draws,
       'losses': losses,
       'trophyCount': trophyCount,
+      'boardPrestige': boardPrestige.clamp(1, 10).toInt(),
     };
   }
 
@@ -604,6 +637,8 @@ class DirectorClubSpell {
       draws: _readNonNegativeInt(map['draws']),
       losses: _readNonNegativeInt(map['losses']),
       trophyCount: _readNonNegativeInt(map['trophyCount']),
+      boardPrestige:
+          _readInt(map['boardPrestige'], fallback: 1).clamp(1, 10).toInt(),
     );
   }
 }
