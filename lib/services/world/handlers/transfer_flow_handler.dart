@@ -78,7 +78,7 @@ extension TransferFlowHandler on GameState {
 
     _newsFeed.insert(
       0,
-      'Proposta recusada — ${clubName(offer.toClubId)} não levou ${offer.playerName}.$extra',
+      'MERCADO — Proposta recusada. ${clubName(offer.toClubId)} não levou ${offer.playerName}.$extra',
     );
 
     _pendingTransferOffer = null;
@@ -118,7 +118,7 @@ extension TransferFlowHandler on GameState {
 
       _newsFeed.insert(
         0,
-        '${player.nome} recusou a transferência para ${clubName(offer.toClubId)}.$extra',
+        'MERCADO — ${player.nome} recusou a transferência para ${clubName(offer.toClubId)}.$extra',
       );
 
       _pendingTransferOffer = null;
@@ -376,10 +376,10 @@ extension TransferFlowHandler on GameState {
     final financeContext = _financialPressureOfferContext();
 
     if (context.isEmpty && financeContext.isEmpty) {
-      return '$club fez proposta por ${player.nome} (${player.ovrCheio}) no valor de $valueLabel.';
+      return 'MERCADO — $club fez proposta por ${player.nome} (${player.ovrCheio}) no valor de $valueLabel.';
     }
 
-    return '$club fez proposta por ${player.nome} (${player.ovrCheio}) no valor de $valueLabel. ${[
+    return 'MERCADO — $club fez proposta por ${player.nome} (${player.ovrCheio}) no valor de $valueLabel. ${[
       context,
       financeContext,
     ].where((e) => e.trim().isNotEmpty).join(' ')}';
@@ -412,7 +412,7 @@ extension TransferFlowHandler on GameState {
 
     final contextText = context.isEmpty ? '' : ' $context';
 
-    return 'Venda concluída — ${player.nome} foi negociado com $club por $soldLabel.$contextText '
+    return 'MERCADO — Venda concluída. ${player.nome} foi negociado com $club por $soldLabel.$contextText '
         'Pela condição financeira atual do clube, $debtPctLabel% da operação ($debtLabel) foi direcionado para quitação de dívidas. '
         'Os outros $availablePctLabel% foram liberados para o clube: $operationalLabel reforçam o fluxo de caixa para salários e manutenção, '
         'e $cashLabel entram no caixa disponível para investimentos.';
@@ -841,13 +841,13 @@ extension TransferFlowHandler on GameState {
 
     switch (listType) {
       case MarketListType.free:
-        return 'Chegou ${player.nome}, $pos de OVR ${player.ovrCheio}. Livre no mercado, custou $costLabel em luvas. Valor de mercado estimado: $marketLabel. Salário mensal: $salaryLabel.';
+        return 'MERCADO — Chegou ${player.nome}, $pos de OVR ${player.ovrCheio}. Livre no mercado, custou $costLabel em luvas. Valor de mercado estimado: $marketLabel. Salário mensal: $salaryLabel.';
 
       case MarketListType.transfer:
-        return 'Chegou ${player.nome}, $pos de OVR ${player.ovrCheio}. O clube investiu $costLabel na transferência. Valor de mercado estimado: $marketLabel. Salário mensal: $salaryLabel.';
+        return 'MERCADO — Chegou ${player.nome}, $pos de OVR ${player.ovrCheio}. O clube investiu $costLabel na transferência. Valor de mercado estimado: $marketLabel. Salário mensal: $salaryLabel.';
 
       case MarketListType.loan:
-        return 'Chegou ${player.nome}, $pos de OVR ${player.ovrCheio}, por empréstimo. O custo inicial foi de $costLabel. Valor de mercado estimado: $marketLabel. Salário mensal: $salaryLabel.';
+        return 'MERCADO — Chegou ${player.nome}, $pos de OVR ${player.ovrCheio}, por empréstimo. O custo inicial foi de $costLabel. Valor de mercado estimado: $marketLabel. Salário mensal: $salaryLabel.';
     }
   }
 
@@ -918,13 +918,13 @@ extension TransferFlowHandler on GameState {
 
     switch (arrival.listType) {
       case MarketListType.free:
-        return 'Chegada confirmada — ${player.nome}, $pos de OVR ${player.ovrCheio}, já está integrado ao elenco. Salário mensal: $salaryLabel.';
+        return 'MERCADO — Chegada confirmada. ${player.nome}, $pos de OVR ${player.ovrCheio}, já está integrado ao elenco. Salário mensal: $salaryLabel.';
 
       case MarketListType.transfer:
-        return 'Chegada confirmada — ${player.nome}, $pos de OVR ${player.ovrCheio}, apresentou-se ao clube após acordo antecipado. Salário mensal: $salaryLabel.';
+        return 'MERCADO — Chegada confirmada. ${player.nome}, $pos de OVR ${player.ovrCheio}, apresentou-se ao clube após acordo antecipado. Salário mensal: $salaryLabel.';
 
       case MarketListType.loan:
-        return 'Chegada confirmada — ${player.nome}, $pos de OVR ${player.ovrCheio}, chegou por empréstimo após acordo antecipado. Salário mensal: $salaryLabel.';
+        return 'MERCADO — Chegada confirmada. ${player.nome}, $pos de OVR ${player.ovrCheio}, chegou por empréstimo após acordo antecipado. Salário mensal: $salaryLabel.';
     }
   }
 

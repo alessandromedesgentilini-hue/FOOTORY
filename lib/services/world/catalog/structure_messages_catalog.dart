@@ -58,7 +58,7 @@ class StructureMessagesCatalog {
           return 'O complexo esportivo começa a se organizar. O clube ganha uma base física mais confiável para crescer.';
         }
         if (tier == 1) {
-          return 'O complexo esportivo já sustenta um clube competitivo. A sensação de organização passa a fazer parte da rotina.';
+          return 'O complexo esportivo já sustenta um clube competitivo. A organização passa a fazer parte da rotina.';
         }
         if (tier == 2) {
           return 'O complexo esportivo entra em nível de elite. O clube passa a ter uma infraestrutura digna de grandes projetos.';
@@ -110,15 +110,15 @@ class StructureMessagesCatalog {
         return 'O financeiro alcança padrão mundial. O clube entra em um novo nível de organização e controle.';
       case ClubStructureType.marketing:
         if (tier == 0) {
-          return 'O marketing melhora e o clube começa a se apresentar de forma mais profissional.';
+          return 'O marketing melhora e o clube começa a ter melhor capacidade comercial.';
         }
         if (tier == 1) {
-          return 'O marketing se consolida. A força da marca do clube passa a crescer de forma perceptível.';
+          return 'O marketing se consolida. A estrutura comercial passa a gerar mais receita e atrair mais público.';
         }
         if (tier == 2) {
-          return 'O marketing atinge nível de elite. O clube passa a gerar mais impacto e valor de imagem.';
+          return 'O marketing atinge nível de elite. O clube passa a ter alto potencial de patrocínio e público.';
         }
-        return 'O marketing chega a padrão mundial. O clube agora carrega uma marca de grande peso no cenário.';
+        return 'O marketing chega a padrão mundial. O clube alcança sua capacidade máxima de geração de receita comercial.';
       case ClubStructureType.comunicacao:
         if (tier == 0) {
           return 'A comunicação do clube melhora e a imagem institucional começa a ganhar mais estabilidade.';
@@ -132,21 +132,21 @@ class StructureMessagesCatalog {
         return 'A comunicação chega a padrão mundial. O clube entra em um novo nível de presença e influência.';
       case ClubStructureType.medico:
         if (tier == 0) {
-          return 'O departamento médico melhora e o clube passa a oferecer cuidados mais confiáveis aos atletas.';
+          return 'O departamento médico melhora e aumenta a capacidade de prevenção de atendimentos.';
         }
         if (tier == 1) {
-          return 'O departamento médico se consolida. A sensação de segurança física no elenco muda de nível.';
+          return 'O departamento médico se consolida. A incidência de ocorrências durante partidas diminui.';
         }
         if (tier == 2) {
-          return 'O departamento médico atinge nível de elite. O clube passa a operar com alto padrão de cuidado e recuperação.';
+          return 'O departamento médico atinge nível de elite. O clube passa a operar com alto padrão preventivo.';
         }
-        return 'O departamento médico alcança padrão mundial. O clube entra em outro patamar de suporte físico e profissional.';
+        return 'O departamento médico alcança padrão mundial. O clube entra em outro patamar de capacidade médica.';
       case ClubStructureType.estadio:
         if (tier == 0) {
           return 'O estádio melhora e o clube começa a oferecer uma casa mais digna para torcida e elenco.';
         }
         if (tier == 1) {
-          return 'O estádio se consolida como uma verdadeira casa do clube. O ambiente ganha força e identidade.';
+          return 'O estádio se consolida como uma verdadeira casa do clube. A capacidade aumenta.';
         }
         if (tier == 2) {
           return 'O estádio entra em nível de elite. O clube passa a ter um palco de respeito para grandes partidas.';

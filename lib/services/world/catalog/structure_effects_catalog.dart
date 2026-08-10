@@ -96,22 +96,22 @@ class StructureEffectsCatalog {
 
   static String _medico(int level) {
     if (level <= 2) {
-      return 'Departamento médico básico. Recuperação lenta.';
+      return 'Departamento médico básico. Capacidade preventiva limitada.';
     }
 
     if (level <= 4) {
-      return 'Recuperação física melhorada. Redução leve de lesões.';
+      return 'Estrutura médica em desenvolvimento. Reduz parte das ocorrências durante as partidas.';
     }
 
     if (level <= 6) {
-      return 'Boa prevenção de lesões.';
+      return 'Boa capacidade de prevenção e atendimento.';
     }
 
     if (level <= 8) {
-      return 'Centro médico avançado. Recuperação rápida.';
+      return 'Estrutura médica avançada, com baixa incidência de atendimentos.';
     }
 
-    return 'Departamento médico de elite. Prevenção máxima de lesões.';
+    return 'Departamento médico de elite, com máxima capacidade preventiva.';
   }
 
   static String _financeiro(int level) {
@@ -140,7 +140,7 @@ class StructureEffectsCatalog {
     }
 
     if (level <= 4) {
-      return 'Divulgação moderada do clube. Público começa a crescer.';
+      return 'Divulgação moderada do clube. Capacidade comercial intermediária.';
     }
 
     if (level <= 6) {
@@ -148,10 +148,10 @@ class StructureEffectsCatalog {
     }
 
     if (level <= 8) {
-      return 'Marca forte e grande apelo com a torcida.';
+      return 'Estrutura comercial forte. Alta capacidade de geração de receita.';
     }
 
-    return 'Marketing de elite. Alto potencial de público.';
+    return 'Marketing de elite. Alto potencial de público e patrocínio.';
   }
 
   static String _estadio(int level) {

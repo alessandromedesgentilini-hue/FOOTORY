@@ -171,117 +171,117 @@ class NarrativeWriterService {
     switch (analysis.boardMood) {
       case BoardMood.thrilled:
         if (prestige >= 10) {
-          return 'DIRETORIA — A temporada reforça uma relação já histórica. A diretoria reconhece o trabalho como parte central da trajetória recente do clube e deposita confiança total na continuidade do projeto.';
+          return 'Cíntia Sánchez, Presidente — A temporada reforça nossa parceria histórica. Vejo seu trabalho como parte central da trajetória recente do clube e deposito confiança total na continuidade do projeto.';
         }
 
         if (prestige >= 8) {
-          return 'DIRETORIA — A temporada amplia ainda mais o prestígio do diretor. Internamente, o planejamento esportivo é tratado com grande respeito e confiança.';
+          return 'Cíntia Sánchez, Presidente — A temporada amplia ainda mais seu prestígio. Internamente, tratamos o planejamento esportivo com grande respeito e confiança.';
         }
 
         if (prestige >= 5) {
-          return 'DIRETORIA — A temporada consolida a confiança no trabalho desenvolvido e fortalece de forma significativa a relação com o planejamento esportivo.';
+          return 'Cíntia Sánchez, Presidente — A temporada consolida o crédito ao seu trabalho e fortalece significativamente nossa parceria.';
         }
 
         if (prestige >= 3) {
-          return 'DIRETORIA — O resultado causa forte entusiasmo e acelera a construção de confiança no trabalho do diretor.';
+          return 'Cíntia Sánchez, Presidente — O resultado causa forte entusiasmo e acelera a construção de credibilidade em seu trabalho.';
         }
 
-        return 'DIRETORIA — A temporada causa excelente impressão e representa um passo importante para construir confiança no planejamento esportivo.';
+        return 'Cíntia Sánchez, Presidente — A temporada causa excelente impressão e representa um passo importante para construir credibilidade no planejamento esportivo.';
 
       case BoardMood.satisfied:
         if (prestige >= 10) {
-          return 'DIRETORIA — A diretoria considera que o resultado superou a régua inicial e reconhece mais uma contribuição relevante de um trabalho já marcado na história do clube.';
+          return 'Cíntia Sánchez, Presidente — Considero que o resultado superou a régua inicial e reconheço mais uma contribuição relevante de um trabalho já marcado na história do clube.';
         }
 
         if (prestige >= 8) {
-          return 'DIRETORIA — O resultado supera a régua estabelecida e reforça a elevada confiança da diretoria no trabalho que vem sendo realizado.';
+          return 'Cíntia Sánchez, Presidente — O resultado supera a régua estabelecida e reforça a elevada credibilidade no trabalho que vem sendo realizado.';
         }
 
         if (prestige >= 5) {
-          return 'DIRETORIA — A diretoria considera que o resultado superou a régua inicial e entende que o trabalho segue justificando a confiança conquistada.';
+          return 'Cíntia Sánchez, Presidente — Considero que o resultado superou a régua inicial e entendo que seu trabalho segue justificando o crédito conquistado.';
         }
 
         if (prestige >= 3) {
-          return 'DIRETORIA — O resultado supera a régua estabelecida e contribui para fortalecer a confiança no planejamento esportivo.';
+          return 'Cíntia Sánchez, Presidente — O resultado supera a régua estabelecida e contribui para fortalecer a credibilidade no planejamento esportivo.';
         }
 
-        return 'DIRETORIA — O resultado supera a régua estabelecida e gera uma avaliação positiva sobre os primeiros passos do trabalho.';
+        return 'Cíntia Sánchez, Presidente — O resultado supera a régua estabelecida e gera uma avaliação positiva sobre os primeiros passos do seu trabalho.';
 
       case BoardMood.acceptable:
         if (prestige >= 10) {
-          return 'DIRETORIA — A temporada termina dentro de uma margem aceitável. O histórico construído garante confiança, embora a diretoria espere um novo avanço no próximo ano.';
+          return 'Cíntia Sánchez, Presidente — A temporada termina dentro de uma margem aceitável. O histórico construído garante credibilidade, embora eu espere um novo avanço no próximo ano.';
         }
 
         if (prestige >= 8) {
-          return 'DIRETORIA — A avaliação é de uma temporada aceitável. O trabalho acumulado preserva a confiança, mas a diretoria espera evolução na próxima campanha.';
+          return 'Cíntia Sánchez, Presidente — A avaliação é de uma temporada aceitável. O trabalho acumulado preserva o crédito, mas espero evolução na próxima campanha.';
         }
 
         if (prestige >= 5) {
-          return 'DIRETORIA — A temporada fica dentro de uma margem aceitável. A confiança permanece, acompanhada da expectativa de evolução.';
+          return 'Cíntia Sánchez, Presidente — A temporada fica dentro de uma margem aceitável. O crédito permanece, acompanhado da expectativa de evolução.';
         }
 
         if (prestige >= 3) {
-          return 'DIRETORIA — A avaliação interna é de uma temporada aceitável, ainda sem conclusões definitivas sobre a consolidação do trabalho.';
+          return 'Cíntia Sánchez, Presidente — A avaliação interna é de uma temporada aceitável, ainda sem conclusões definitivas sobre a consolidação do seu trabalho.';
         }
 
-        return 'DIRETORIA — A temporada é considerada aceitável para o contexto do clube, mas a relação ainda está em fase inicial de avaliação.';
+        return 'Cíntia Sánchez, Presidente — A temporada é considerada aceitável para o contexto do clube, mas nossa parceria ainda está em fase inicial de avaliação.';
 
       case BoardMood.alert:
         if (prestige >= 10) {
-          return 'DIRETORIA — A diretoria reconhece o peso histórico do trabalho, mas deixa claro que o contexto exige resposta rápida e correções importantes na próxima temporada.';
+          return 'Cíntia Sánchez, Presidente — Reconheço o peso histórico do seu trabalho, mas deixo claro que o contexto exige reação imediata e correções importantes na próxima temporada.';
         }
 
         if (prestige >= 8) {
-          return 'DIRETORIA — O crédito acumulado mantém a confiança no diretor, mas a diretoria cobra uma resposta rápida e consistente na próxima temporada.';
+          return 'Cíntia Sánchez, Presidente — O crédito acumulado mantém a credibilidade em você, mas cobro uma reação imediata e consistente na próxima temporada.';
         }
 
         if (prestige >= 5) {
-          return 'DIRETORIA — A confiança construída evita uma reação precipitada, mas será necessário responder rapidamente na próxima temporada.';
+          return 'Cíntia Sánchez, Presidente — O crédito construído evita uma reação precipitada, mas será necessário reagir imediatamente na próxima temporada.';
         }
 
         if (prestige >= 3) {
-          return 'DIRETORIA — O contexto acende um alerta e interrompe parte do avanço na relação de confiança. A próxima temporada exigirá resposta rápida.';
+          return 'Cíntia Sánchez, Presidente — O contexto acende um alerta e interrompe parte do avanço em nossa parceria. A próxima temporada exigirá reação imediata.';
         }
 
-        return 'DIRETORIA — O contexto difícil acende um alerta precoce. A diretoria espera uma resposta rápida para aumentar a confiança no trabalho.';
+        return 'Cíntia Sánchez, Presidente — O contexto difícil acende um alerta precoce. Espero uma reação imediata para aumentar a credibilidade no seu trabalho.';
 
       case BoardMood.disappointed:
         if (prestige >= 10) {
-          return 'DIRETORIA — A temporada gera forte frustração, mesmo diante de uma trajetória histórica. A diretoria preserva o respeito pelo trabalho, mas cobra uma reação firme.';
+          return 'Cíntia Sánchez, Presidente — A temporada gera forte frustração, mesmo diante de uma trajetória histórica. Preservo o respeito pelo seu trabalho, mas cobro uma reação firme.';
         }
 
         if (prestige >= 8) {
-          return 'DIRETORIA — O desempenho gera frustração interna. O prestígio acumulado garante respeito e confiança, mas aumenta também a responsabilidade por uma reação.';
+          return 'Cíntia Sánchez, Presidente — O desempenho gera frustração interna. O prestígio acumulado garante respeito e credibilidade, mas aumenta também a responsabilidade por uma reação.';
         }
 
         if (prestige >= 5) {
-          return 'DIRETORIA — O desempenho gera frustração e desgasta parte da confiança conquistada. A cobrança por evolução será maior na próxima temporada.';
+          return 'Cíntia Sánchez, Presidente — O desempenho gera frustração e desgasta parte do crédito conquistado. A cobrança por evolução será maior na próxima temporada.';
         }
 
         if (prestige >= 3) {
-          return 'DIRETORIA — A frustração interna interrompe a construção de confiança e aumenta de forma clara a cobrança sobre o planejamento esportivo.';
+          return 'Cíntia Sánchez, Presidente — A frustração interna interrompe a construção de credibilidade e aumenta de forma clara a cobrança sobre o planejamento esportivo.';
         }
 
-        return 'DIRETORIA — O desempenho gera frustração em uma relação ainda pouco consolidada e aumenta significativamente a cobrança por resultados.';
+        return 'Cíntia Sánchez, Presidente — O desempenho gera frustração em uma parceria ainda pouco consolidada e aumenta significativamente a cobrança por resultados.';
 
       case BoardMood.crisis:
         if (prestige >= 10) {
-          return 'DIRETORIA — A temporada provoca uma crise esportiva grave. Nem mesmo o peso histórico do trabalho elimina a cobrança por mudanças profundas e resposta imediata.';
+          return 'Cíntia Sánchez, Presidente — A temporada provoca uma crise esportiva grave. Nem mesmo o peso histórico do seu trabalho elimina a cobrança por mudanças profundas e reação imediata.';
         }
 
         if (prestige >= 8) {
-          return 'DIRETORIA — A crise esportiva coloca o planejamento sob forte pressão. O prestígio acumulado preserva o respeito pelo diretor, mas não reduz a exigência por mudanças imediatas.';
+          return 'Cíntia Sánchez, Presidente — A crise esportiva coloca o planejamento sob forte pressão. O prestígio acumulado preserva o respeito por você, mas não reduz a exigência por mudanças imediatas.';
         }
 
         if (prestige >= 5) {
-          return 'DIRETORIA — A temporada coloca o planejamento esportivo em crise e consome parte importante da confiança construída. A resposta terá de ser imediata.';
+          return 'Cíntia Sánchez, Presidente — A temporada coloca o planejamento esportivo em crise e consome parte importante do crédito construído. A reação terá de ser imediata.';
         }
 
         if (prestige >= 3) {
-          return 'DIRETORIA — A temporada provoca uma crise interna e abala fortemente uma relação de confiança que ainda estava em construção.';
+          return 'Cíntia Sánchez, Presidente — A temporada provoca uma crise interna e abala fortemente uma parceria que ainda estava em construção.';
         }
 
-        return 'DIRETORIA — A temporada provoca uma crise esportiva e coloca o planejamento sob pressão máxima em uma relação ainda sem crédito acumulado.';
+        return 'Cíntia Sánchez, Presidente — A temporada provoca uma crise esportiva e coloca o planejamento sob pressão máxima em uma parceria ainda sem crédito acumulado.';
     }
   }
 
@@ -293,25 +293,25 @@ class NarrativeWriterService {
 
     switch (analysis.pressMood) {
       case PressMood.amazed:
-        return 'IMPRENSA — A campanha do $club é tratada como uma das histórias mais marcantes da temporada.';
+        return 'Luciana Pontes, Assessora de Imprensa — A cobertura midiática trata a campanha do $club como uma das histórias mais marcantes da temporada.';
 
       case PressMood.impressed:
-        return 'IMPRENSA — A imprensa destaca que o clube superou amplamente as projeções feitas no início do campeonato.';
+        return 'Luciana Pontes, Assessora de Imprensa — A repercussão destaca que o clube superou amplamente as projeções feitas no início do campeonato.';
 
       case PressMood.positive:
-        return 'IMPRENSA — A avaliação geral é de que o clube mostrou evolução competitiva real ao longo do ano.';
+        return 'Luciana Pontes, Assessora de Imprensa — O noticiário geral avalia que o clube mostrou evolução competitiva real ao longo do ano.';
 
       case PressMood.neutral:
-        return 'IMPRENSA — A campanha é tratada como coerente com o cenário esportivo projetado antes do início da temporada.';
+        return 'Luciana Pontes, Assessora de Imprensa — A leitura externa trata a campanha como coerente com o cenário esportivo projetado antes do início da temporada.';
 
       case PressMood.questioning:
-        return 'IMPRENSA — O rebaixamento é tratado como duro, mas compatível com o tamanho do desafio enfrentado pelo clube durante o ano.';
+        return 'Luciana Pontes, Assessora de Imprensa — A análise da mídia trata o rebaixamento como duro, mas compatível com o tamanho do desafio enfrentado pelo clube durante o ano.';
 
       case PressMood.critical:
-        return 'IMPRENSA — A imprensa avalia que o clube ficou abaixo do que poderia entregar dentro da competição.';
+        return 'Luciana Pontes, Assessora de Imprensa — A crítica externa avalia que o clube ficou abaixo do que poderia entregar dentro da competição.';
 
       case PressMood.crisis:
-        return 'IMPRENSA — A temporada é tratada como uma crise esportiva importante e aumenta o debate sobre o futuro do projeto.';
+        return 'Luciana Pontes, Assessora de Imprensa — A repercussão trata a temporada como uma crise esportiva importante e aumenta o debate sobre o futuro do projeto.';
     }
   }
 

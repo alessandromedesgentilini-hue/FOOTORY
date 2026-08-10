@@ -38,7 +38,7 @@ extension MarketWindowHandler on GameState {
     final monthLabel = month == 7 ? 'julho' : 'janeiro';
 
     _insertNewsIfNew(
-      'Mercado aberto — A janela de $monthLabel renovou as opções de transferência, empréstimo e agentes livres observados pelo scout.',
+      'MERCADO — Mercado aberto. A janela de $monthLabel renovou as opções de transferência, empréstimo e agentes livres observados pelo scout.',
     );
   }
 }

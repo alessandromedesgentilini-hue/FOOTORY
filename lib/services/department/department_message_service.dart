@@ -227,37 +227,37 @@ class DepartmentMessageService {
     switch (mood) {
       case DepartmentMoodLevel.veryBad:
         return [
-          'O setor voltou a acender um sinal de alerta.',
-          'Há preocupação interna com o momento atual do setor.',
-          'A avaliação mais recente trouxe pontos de atenção.',
+          'A estrutura atual ainda limita bastante o trabalho do setor.',
+          'A capacidade do departamento está abaixo do nível desejado.',
+          'O setor trabalha hoje com limitações importantes.',
         ];
 
       case DepartmentMoodLevel.bad:
         return [
-          'O setor segue funcionando, mas abaixo do ideal.',
-          'A leitura interna indica que ainda faltam ajustes.',
-          'A avaliação do momento é de desempenho irregular.',
+          'O setor segue funcionando, mas ainda abaixo do ideal.',
+          'A estrutura atual permite trabalhar, mas ainda impõe limitações.',
+          'Ainda existe uma margem importante para evolução do departamento.',
         ];
 
       case DepartmentMoodLevel.stable:
         return [
-          'O setor mantém funcionamento dentro do esperado.',
-          'A situação atual é considerada controlada.',
-          'O departamento segue operando com estabilidade.',
+          'O departamento opera atualmente dentro de um padrão intermediário.',
+          'A estrutura atual permite um funcionamento estável.',
+          'O setor trabalha hoje com capacidade adequada ao nível disponível.',
         ];
 
       case DepartmentMoodLevel.good:
         return [
-          'O setor apresenta sinais positivos nas últimas avaliações.',
-          'A leitura interna do momento é boa.',
-          'O departamento vive um período de evolução consistente.',
+          'O setor trabalha hoje com boa capacidade.',
+          'A estrutura atual oferece boas condições para o departamento cumprir sua função.',
+          'O departamento opera em um nível forte de capacidade.',
         ];
 
       case DepartmentMoodLevel.excellent:
         return [
-          'O setor vive um dos melhores momentos desde o início do projeto.',
-          'A avaliação interna do departamento é extremamente positiva.',
-          'Os resultados recentes colocam o setor em destaque dentro do clube.',
+          'A estrutura atual coloca o setor entre os pontos fortes do clube.',
+          'O departamento trabalha hoje com capacidade muito alta.',
+          'O nível atual permite ao setor operar próximo de seu potencial máximo.',
         ];
     }
   }
@@ -286,106 +286,9 @@ class DepartmentMessageService {
     required int totalTeams,
     required String divisionId,
   }) {
-    final contextPool = <String>[];
-
-    // =========================================================
-    // FORMA
-    // =========================================================
-
-    if (winStreak >= 5) {
-      contextPool.addAll(
-        contextualMessages['good_form'] ?? const [],
-      );
-
-      contextPool.add(
-        'O elenco vive uma sequência extremamente positiva nas últimas rodadas.',
-      );
-    } else if (winStreak >= 3) {
-      contextPool.add(
-        'A sequência recente de vitórias melhorou bastante o ambiente interno.',
-      );
-    }
-
-    if (loseStreak >= 5) {
-      contextPool.addAll(
-        contextualMessages['bad_form'] ?? const [],
-      );
-
-      contextPool.add(
-        'A pressão interna aumentou bastante após os últimos resultados.',
-      );
-    } else if (loseStreak >= 3) {
-      contextPool.add(
-        'A sequência negativa recente elevou a cobrança sobre o clube.',
-      );
-    }
-
-    // =========================================================
-    // FINANÇAS
-    // =========================================================
-
-    switch (financeHealth) {
-      case FinanceHealth.muitoSaudavel:
-        contextPool.add(
-          'O bom momento financeiro ajuda o clube a trabalhar com mais estabilidade.',
-        );
-        break;
-
-      case FinanceHealth.saudavel:
-        contextPool.add(
-          'As contas seguem relativamente organizadas neste momento.',
-        );
-        break;
-
-      case FinanceHealth.estavel:
-        contextPool.add(
-          'O clube mantém equilíbrio financeiro, mas ainda exige cautela.',
-        );
-        break;
-
-      case FinanceHealth.pressionado:
-        contextPool.add(
-          'A situação financeira já começa a limitar algumas decisões internas.',
-        );
-        break;
-
-      case FinanceHealth.critico:
-        contextPool.add(
-          'O cenário financeiro atual exige bastante controle do clube.',
-        );
-        break;
-
-      case FinanceHealth.colapsoFinanceiro:
-        contextPool.add(
-          'O ambiente financeiro do clube segue extremamente delicado.',
-        );
-        break;
-    }
-
-    // =========================================================
-    // TABELA
-    // =========================================================
-
-    final topZone = tablePosition <= 4;
-    final dangerZone = tablePosition > totalTeams - 4;
-
-    if (topZone) {
-      contextPool.add(
-        'A posição atual na tabela aumentou o otimismo dentro do clube.',
-      );
-    }
-
-    if (dangerZone) {
-      contextPool.add(
-        'A situação na tabela começa a gerar preocupação internamente.',
-      );
-    }
-
-    if (contextPool.isEmpty) {
-      return '';
-    }
-
-    return contextPool[rng.nextInt(contextPool.length)];
+    // Contexto genérico removido para evitar incoerência de autoria.
+    // Cada departamento deve comentar apenas contextos coerentes com sua função.
+    return '';
   }
 
   String _joinText({

@@ -62,7 +62,7 @@ extension MarketOpportunityHandler on GameState {
   String _buildMarketOpportunityText(Player player) {
     final posLabel = _marketOpportunityPosLabel(player.posDet);
 
-    return 'Oportunidade de mercado — Scout e Comunicação identificaram uma chance rara por ${player.nome}, $posLabel de OVR ${player.ovrCheio}. A leitura do mercado indicou uma situação favorável no clube de origem. A operação pode sair abaixo do valor normal, mas a negociação ainda dependerá da força do departamento financeiro.';
+    return 'Jorge Silveira, Chefe de Observação — O cruzamento das informações disponíveis apontou uma chance rara por ${player.nome}, $posLabel de OVR ${player.ovrCheio}. A leitura do mercado indicou uma situação favorável no clube de origem. A operação pode sair abaixo do valor normal, mas a negociação dependerá da força do departamento financeiro.';
   }
 
   List<int> _marketOpportunityOvrRangeByScore(int score) {

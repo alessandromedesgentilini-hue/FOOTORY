@@ -51,56 +51,56 @@ const Map<DepartmentType, Map<DepartmentMoodLevel, List<String>>>
   },
   DepartmentType.medical: {
     DepartmentMoodLevel.veryBad: [
-      'Temos vários jogadores com problemas físicos no momento.',
-      'O departamento médico lida com uma carga alta de situações físicas no elenco.',
-      'A condição física do grupo preocupa e exige atenção redobrada.',
+      'Nossa capacidade de prevenção ainda é bastante limitada.',
+      'A estrutura atual deixa o setor mais exposto a ocorrências que exigem atendimento durante os jogos.',
+      'O nível atual ainda está abaixo do padrão que considero adequado para o setor.',
     ],
     DepartmentMoodLevel.bad: [
-      'Alguns atletas ainda precisam de atenção médica.',
-      'O elenco carrega algumas pendências físicas que pedem cautela.',
-      'Ainda há jogadores sob observação física no departamento médico.',
+      'Ainda temos limitações importantes na capacidade preventiva do departamento.',
+      'A estrutura precisa evoluir para reduzir melhor a incidência de atendimentos durante as partidas.',
+      'O setor funciona, mas ainda com uma margem grande para melhorar a prevenção.',
     ],
     DepartmentMoodLevel.stable: [
-      'A situação física do elenco está sob controle.',
-      'O departamento médico considera o quadro geral estável no momento.',
-      'Fisicamente, o elenco segue em condição administrável.',
+      'O departamento opera hoje com uma capacidade preventiva intermediária.',
+      'A estrutura atual permite um trabalho médico estável, dentro do nível disponível.',
+      'O setor já oferece uma base funcional de prevenção para as partidas.',
     ],
     DepartmentMoodLevel.good: [
-      'A maioria dos jogadores está em boas condições físicas.',
-      'O quadro físico atual do elenco é positivo para a sequência.',
-      'O departamento médico vê o grupo em situação confortável neste momento.',
+      'Nossa estrutura já oferece uma boa capacidade de prevenção.',
+      'O nível atual reduz de forma importante a incidência de situações que exigem atendimento.',
+      'O departamento trabalha hoje com uma estrutura segura e eficiente para sua função.',
     ],
     DepartmentMoodLevel.excellent: [
-      'O elenco está em excelente condição física.',
-      'O departamento médico considera o momento físico do grupo muito forte.',
-      'A condição atlética do elenco está em um dos melhores níveis da temporada.',
+      'Nossa capacidade preventiva está entre os níveis mais altos possíveis.',
+      'A estrutura atual permite ao setor trabalhar com um padrão médico muito alto.',
+      'O departamento dispõe hoje de sua melhor capacidade para reduzir ocorrências médicas durante os jogos.',
     ],
   },
   DepartmentType.marketing: {
     DepartmentMoodLevel.veryBad: [
-      'O interesse do público pelo clube caiu nas últimas semanas.',
-      'As ações recentes do clube geraram pouco impacto junto aos torcedores.',
-      'O engajamento em torno da marca do clube caiu e preocupa o setor.',
+      'Nossa estrutura comercial ainda limita bastante o potencial de receita do clube.',
+      'Hoje trabalhamos com capacidade reduzida tanto em patrocínio quanto na atração de público.',
+      'O nível atual do Marketing deixa pouco espaço para explorar o potencial comercial do clube.',
     ],
     DepartmentMoodLevel.bad: [
-      'Precisamos melhorar nossa presença junto aos torcedores.',
-      'O clube ainda não conseguiu gerar a conexão esperada com seu público recente.',
-      'O marketing entende que falta mais força na relação com a torcida.',
+      'A estrutura ainda precisa evoluir para ampliar nossa capacidade comercial.',
+      'Nosso nível atual ainda limita o retorno que conseguimos gerar com patrocínio e público.',
+      'Ainda temos uma margem importante de crescimento na capacidade do setor.',
     ],
     DepartmentMoodLevel.stable: [
-      'O interesse pelo clube segue estável.',
-      'A presença do clube junto ao público se mantém sem grandes oscilações.',
-      'O marketing vê um cenário controlado, mas ainda sem crescimento real.',
+      'O Marketing opera hoje em um nível intermediário de capacidade comercial.',
+      'A estrutura atual já sustenta uma geração razoável de receita e público.',
+      'Temos uma base funcional, mas ainda há bastante espaço para ampliar o potencial comercial.',
     ],
     DepartmentMoodLevel.good: [
-      'O clube tem mantido boa visibilidade entre os torcedores.',
-      'A imagem do clube segue positiva e com boa presença pública.',
-      'As últimas ações mantiveram o clube em boa evidência entre os torcedores.',
+      'Nossa estrutura já oferece boa capacidade para gerar receita comercial.',
+      'O nível atual do Marketing já amplia bastante nosso potencial de patrocínio e público.',
+      'Hoje o setor trabalha com uma estrutura forte e consegue entregar um retorno comercial relevante.',
     ],
     DepartmentMoodLevel.excellent: [
-      'A popularidade do clube cresceu bastante recentemente.',
-      'O clube vive uma fase muito forte de imagem e presença junto ao público.',
-      'O marketing avalia que a marca do clube ganhou força real nas últimas semanas.',
+      'O Marketing trabalha hoje com capacidade comercial de primeiro nível.',
+      'A estrutura atual permite explorar quase todo o potencial de patrocínio e atração de público do clube.',
+      'Temos uma estrutura capaz de gerar um retorno comercial muito alto para o tamanho atual do clube.',
     ],
   },
   DepartmentType.communication: {
@@ -159,41 +159,41 @@ const Map<DepartmentType, Map<DepartmentMoodLevel, List<String>>>
   },
   DepartmentType.scouting: {
     DepartmentMoodLevel.veryBad: [
-      'O mercado está difícil no momento.',
-      'As últimas observações trouxeram poucas oportunidades realmente interessantes.',
-      'O scout enfrenta um período fraco de mercado nas análises recentes.',
+      'A capacidade de observação do setor está limitada pela escassez de oportunidades no mercado atual.',
+      'A qualidade dos relatórios recentes foi prejudicada pela ausência de alvos relevantes em nosso raio de atuação.',
+      'A eficiência da leitura de mercado do setor está reduzida devido às condições atuais de observação.',
     ],
     DepartmentMoodLevel.bad: [
-      'Ainda não encontramos boas oportunidades no mercado.',
-      'Os relatórios recentes indicam poucas opções realmente animadoras.',
-      'O setor segue procurando, mas sem alvos que empolguem até aqui.',
+      'O alcance de nossa observação ainda não identificou alvos com potencial suficiente para justificar recomendações.',
+      'A análise recente das observações indicou baixa densidade de perfis com características alinhadas ao que precisamos.',
+      'O setor mantém sua capacidade de monitoramento, mas ainda não foi possível identificar perfis que atendam aos requisitos mínimos.',
     ],
     DepartmentMoodLevel.stable: [
       'O mercado segue sendo monitorado normalmente.',
-      'O scout mantém rotina estável de observação sem grandes destaques recentes.',
+      'A eficiência da observação se mantém estável, sem variações significativas na qualidade das leituras realizadas.',
       'O setor continua trabalhando de forma constante na leitura do mercado.',
     ],
     DepartmentMoodLevel.good: [
-      'Encontramos alguns jogadores interessantes recentemente.',
-      'Os últimos relatórios apontaram nomes que podem valer acompanhamento maior.',
-      'O scout começou a reunir opções mais promissoras nas observações recentes.',
+      'A capacidade de identificação de perfis relevantes melhorou nas últimas observações realizadas.',
+      'A qualidade dos relatórios recentes indica uma melhora na precisão da leitura de mercado.',
+      'A leitura de mercado tem se mostrado mais alinhada com os requisitos técnicos definidos para o elenco.',
     ],
     DepartmentMoodLevel.excellent: [
-      'Identificamos um jogador muito promissor no mercado.',
-      'Um nome observado recentemente elevou bastante o entusiasmo do scout.',
-      'O setor encontrou uma oportunidade que pode ter grande valor esportivo.',
+      'A capacidade de observação do setor alcançou seu nível mais alto nos últimos levantamentos realizados.',
+      'A precisão dos rastreamentos recentes alcançou nível superior, permitindo leituras mais detalhadas de potenciais.',
+      'A eficiência da observação do setor atingiu patamar excepcional, com leituras de alta consistência sobre os alvos monitorados.',
     ],
   },
   DepartmentType.sportsComplex: {
     DepartmentMoodLevel.veryBad: [
-      'Algumas áreas da infraestrutura precisam de melhorias urgentes.',
+      'A infraestrutura atual limita bastante a capacidade de crescimento do clube.',
       'A estrutura atual do clube apresenta limitações que já incomodam o trabalho diário.',
-      'O complexo do clube começa a mostrar sinais claros de desgaste operacional.',
+      'O nível atual do Complexo impõe limitações importantes às demais estruturas.',
     ],
     DepartmentMoodLevel.bad: [
       'A estrutura atual apresenta algumas limitações.',
       'O funcionamento geral do complexo segue, mas com restrições perceptíveis.',
-      'Alguns setores da infraestrutura já pedem intervenção para render melhor.',
+      'Algumas áreas do clube já estão próximas do limite permitido pelo Complexo atual.',
     ],
     DepartmentMoodLevel.stable: [
       'A infraestrutura está funcionando normalmente.',
@@ -207,13 +207,13 @@ const Map<DepartmentType, Map<DepartmentMoodLevel, List<String>>>
     ],
     DepartmentMoodLevel.excellent: [
       'A infraestrutura do clube está em excelente estado.',
-      'O complexo do clube vive um momento muito forte em termos de estrutura.',
+      'O complexo do clube oferece hoje uma estrutura de nível muito alto.',
       'O padrão atual da infraestrutura é visto internamente como um grande diferencial.',
     ],
   },
   DepartmentType.stadium: {
     DepartmentMoodLevel.veryBad: [
-      'O estádio apresenta problemas que precisam ser resolvidos.',
+      'A capacidade física do estádio limita bastante nossa capacidade de receber público.',
       'A estrutura do estádio já começa a limitar mais do que deveria.',
       'O estádio atravessa um momento de funcionamento abaixo do ideal.',
     ],
@@ -228,14 +228,14 @@ const Map<DepartmentType, Map<DepartmentMoodLevel, List<String>>>
       'O estádio cumpre bem seu papel dentro do padrão atual do clube.',
     ],
     DepartmentMoodLevel.good: [
-      'O estádio tem recebido boa presença de público.',
-      'O ambiente do estádio segue positivo e com boa resposta da torcida.',
-      'O estádio vive um momento saudável, com presença consistente de público.',
+      'A estrutura atual já oferece boa capacidade para receber público.',
+      'O estádio já oferece uma estrutura sólida para os jogos do clube.',
+      'O nível atual coloca o estádio em um padrão bastante competitivo.',
     ],
     DepartmentMoodLevel.excellent: [
-      'O estádio vive grande momento com forte presença de torcedores.',
-      'A casa do clube atravessa fase muito positiva em ambiente e ocupação.',
-      'O estádio se consolidou como um dos pontos fortes do momento do clube.',
+      'O estádio alcançou uma capacidade muito alta para receber a torcida.',
+      'A estrutura atual coloca a casa do clube entre seus principais ativos.',
+      'O estádio é hoje um dos pontos fortes da estrutura do clube.',
     ],
   },
   DepartmentType.trainingCenter: {
@@ -265,109 +265,6 @@ const Map<DepartmentType, Map<DepartmentMoodLevel, List<String>>>
       'A comissão avalia que o rendimento diário do grupo está em alto nível.',
     ],
   },
-};
-
-const Map<DepartmentType, List<String>> rareEventMessagesByDepartment = {
-  DepartmentType.academy: [
-    'Encontramos um talento excepcional nas categorias de base.',
-    'Um jovem com potencial gigantesco surgiu na base.',
-    'Um nome muito acima da média apareceu nos relatórios mais recentes da base.',
-  ],
-  DepartmentType.medical: [
-    'Nosso departamento médico implementou um novo protocolo de recuperação.',
-    'Uma nova abordagem no acompanhamento físico começou a gerar respostas positivas.',
-  ],
-  DepartmentType.marketing: [
-    'Uma nova oportunidade comercial surgiu para o clube.',
-    'O clube abriu conversa com uma oportunidade que pode fortalecer sua imagem.',
-  ],
-  DepartmentType.communication: [
-    'A última vitória teve grande destaque na imprensa.',
-    'O clube entrou em pauta positiva nos principais espaços de cobertura esportiva.',
-  ],
-  DepartmentType.finance: [
-    'Uma nova fonte de receita foi identificada para o clube.',
-    'O financeiro encontrou uma possibilidade concreta de reforço nas entradas do clube.',
-  ],
-  DepartmentType.scouting: [
-    'Encontramos um jogador muito interessante no mercado.',
-    'Um talento pouco conhecido chamou nossa atenção recentemente.',
-    'Um nome observado recentemente passou a ser tratado como oportunidade real.',
-  ],
-  DepartmentType.sportsComplex: [
-    'As melhorias estruturais começaram a elevar o padrão do clube.',
-    'A evolução da infraestrutura já começa a ser percebida na rotina interna.',
-  ],
-  DepartmentType.stadium: [
-    'Tivemos lotação máxima no último jogo.',
-    'O estádio viveu recentemente um de seus melhores ambientes da temporada.',
-  ],
-  DepartmentType.trainingCenter: [
-    'Alguns jogadores mostraram grande evolução nos últimos treinos.',
-    'O CT registrou recentemente um salto forte de intensidade e resposta do elenco.',
-  ],
-};
-
-const Map<DepartmentType, List<String>> structureUpgradeMessagesByDepartment = {
-  DepartmentType.academy: [
-    'A nova estrutura vai ajudar muito no desenvolvimento dos jovens.',
-    'As melhorias da base tendem a elevar a qualidade da formação a médio prazo.',
-  ],
-  DepartmentType.medical: [
-    'As melhorias no departamento médico vão acelerar a recuperação dos atletas.',
-    'A estrutura médica passa a oferecer mais segurança e agilidade ao elenco.',
-  ],
-  DepartmentType.marketing: [
-    'As melhorias no setor devem fortalecer a marca do clube.',
-    'O marketing ganha estrutura para ampliar a presença do clube junto ao público.',
-  ],
-  DepartmentType.communication: [
-    'A comunicação do clube tende a ganhar mais alcance e organização.',
-    'O setor de comunicação agora tem base melhor para controlar imagem e exposição.',
-  ],
-  DepartmentType.finance: [
-    'A nova estrutura deve melhorar nossa gestão financeira.',
-    'O financeiro ganha melhores condições para controlar e planejar o clube.',
-  ],
-  DepartmentType.scouting: [
-    'Com essa melhoria, teremos melhores condições para observar o mercado.',
-    'O scout passa a operar com base melhor para ampliar a busca por oportunidades.',
-  ],
-  DepartmentType.sportsComplex: [
-    'A nova estrutura melhora o funcionamento geral do clube.',
-    'O complexo passa a oferecer um padrão mais alto para a rotina interna.',
-  ],
-  DepartmentType.stadium: [
-    'As melhorias no estádio devem elevar a experiência do torcedor.',
-    'O estádio recebe base melhor para oferecer ambiente mais forte ao público.',
-  ],
-  DepartmentType.trainingCenter: [
-    'As melhorias no CT já começam a ajudar no trabalho diário.',
-    'O centro de treinamento passa a dar suporte melhor para a evolução do elenco.',
-  ],
-};
-
-const Map<String, List<String>> contextualMessages = {
-  'recent_win': [
-    'A vitória da última rodada aumentou o interesse em torno do clube.',
-    'O resultado recente ajudou a melhorar o ambiente do clube.',
-    'O bom resultado recente trouxe mais confiança para o ambiente interno.',
-  ],
-  'recent_loss': [
-    'A última derrota trouxe alguma pressão ao ambiente.',
-    'O resultado recente aumentou a cobrança sobre o clube.',
-    'O tropeço mais recente deixou o ambiente interno mais sensível.',
-  ],
-  'good_form': [
-    'A boa fase do time tem fortalecido o ambiente interno.',
-    'O momento positivo ajuda a dar mais confiança ao trabalho.',
-    'A fase recente aumenta a sensação de estabilidade dentro do clube.',
-  ],
-  'bad_form': [
-    'A fase atual exige mais atenção de todos os setores.',
-    'O momento recente pede respostas rápidas dentro do clube.',
-    'O clube vive um trecho que exige mais firmeza de todas as áreas.',
-  ],
 };
 
 const Map<DepartmentType, List<String>> preMatchMessagesByDepartment = {

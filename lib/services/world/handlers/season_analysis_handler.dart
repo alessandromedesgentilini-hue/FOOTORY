@@ -207,9 +207,9 @@ extension SeasonAnalysisHandler on GameState {
 
       var boardPrestigeChange = 1;
 
-      if (snap.isStrongAbove) {
+      if (snap.isAboveExpectation) {
         boardPrestigeChange += 1;
-      } else if (snap.isStrongBelow) {
+      } else if (snap.isBelowExpectation) {
         boardPrestigeChange -= 1;
       }
 

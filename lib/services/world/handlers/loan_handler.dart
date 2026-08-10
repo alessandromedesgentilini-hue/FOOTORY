@@ -28,7 +28,7 @@ extension LoanHandler on GameState {
   String _buildLoanReturnNews(Player player) {
     final pos = _posLabelCompact(player.posDet);
 
-    return '${player.nome} retornou ao clube de origem após o fim do empréstimo. '
+    return 'MERCADO — ${player.nome} retornou ao clube de origem após o fim do empréstimo. '
         'O jogador atuava como $pos (OVR ${player.ovrCheio}) e agora passa a ser monitorado pelo clube.';
   }
 }

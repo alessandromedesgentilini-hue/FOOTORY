@@ -156,7 +156,7 @@ extension SeasonFlowHandler on GameState {
         );
 
         _insertNewsIfNew(
-          'Briefing da diretoria — A diretoria definiu a expectativa da temporada como ${snap.expectedLabel}. O objetivo agora é transformar potencial em campanha.',
+          'Cíntia Sánchez, Presidente — Definimos a expectativa da temporada como ${snap.expectedLabel}. Seu trabalho será transformar esse potencial em uma campanha concreta.',
           category: GameMessageCategory.board,
         );
 

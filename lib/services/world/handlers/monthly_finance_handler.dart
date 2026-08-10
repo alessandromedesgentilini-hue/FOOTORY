@@ -44,7 +44,7 @@ extension MonthlyFinanceHandler on GameState {
     final after = userFinance;
 
     _insertNewsIfNew(
-      'Fechamento de $monthLabel — '
+      'FINANÇAS — Fechamento de $monthLabel. '
       'O clube pagou ${_financeMoney(totalCost)} em custos fixos: '
       '${_financeMoney(wageCost)} de folha salarial e '
       '${_financeMoney(structureCost)} de manutenção estrutural.',
@@ -57,18 +57,18 @@ extension MonthlyFinanceHandler on GameState {
       final debtIncrease = after.debt - beforeDebt;
 
       _insertNewsIfNew(
-        'Empréstimo operacional — '
+        'Débora Dutra, Diretora Financeira — '
         'O fluxo operacional não cobria os custos de $monthLabel. '
         'Faltaram ${_financeMoney(missingBeforeLoan)} '
         'para manter salários e estrutura em dia. '
-        'O clube acionou crédito emergencial e a dívida aumentou em '
+        'Foi necessário recorrer a crédito emergencial e a dívida aumentou em '
         '${_financeMoney(debtIncrease)} já com juros.',
       );
     }
 
     if (after.health != beforeHealth) {
       _insertNewsIfNew(
-        'Alerta financeiro — '
+        'Débora Dutra, Diretora Financeira — '
         'A saúde financeira mudou de '
         '${_financeHealthLabel(beforeHealth)} para '
         '${_financeHealthLabel(after.health)} '
@@ -78,12 +78,12 @@ extension MonthlyFinanceHandler on GameState {
 
     if (after.operacional == 0 && missingBeforeLoan > 0) {
       _insertNewsIfNew(
-        'Fluxo operacional zerado — '
+        'Débora Dutra, Diretora Financeira — '
         'O clube terminou $monthLabel sem reserva operacional.',
       );
     } else if (after.operacional <= 10000000 && after.operacional > 0) {
       _insertNewsIfNew(
-        'Fluxo operacional apertado — '
+        'Débora Dutra, Diretora Financeira — '
         'Após o fechamento de $monthLabel, '
         'restam apenas ${_financeMoney(after.operacional)} '
         'para cobrir salários e manutenção.',
@@ -118,10 +118,9 @@ extension MonthlyFinanceHandler on GameState {
 
     _insertNewsIfNew(
       'PATROCÍNIO — '
-      'Em $monthLabel, ${result.message} '
-      'Do valor total, ${_financeMoney(debtPaid)} '
-      'foram usados para reduzir dívida e '
-      '${_financeMoney(retained)} ficaram disponíveis ao clube.',
+      'Em $monthLabel, o clube recebeu ${_financeMoney(result.monthlyAmount)} em receita de patrocínio. '
+      'A projeção anual é de ${_financeMoney(result.annualAmount)}, considerando a divisão e o nível atual de Marketing. '
+      'Do valor recebido, ${_financeMoney(debtPaid)} foram destinados à dívida e ${_financeMoney(retained)} permaneceram disponíveis.',
     );
   }
 
